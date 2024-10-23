@@ -68,3 +68,8 @@ run: $(BIN_DIR)
 
 # Rebuild the project
 rebuild: clean all
+
+CFLAGS_DEBUG = $(INCLUDES) -Wall -Wextra -g
+
+debug: clean
+	$(MAKE) CFLAGS="$(CFLAGS_DEBUG)" all

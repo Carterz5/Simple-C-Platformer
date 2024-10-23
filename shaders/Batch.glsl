@@ -10,10 +10,11 @@ out vec4 v_Color;
 out vec2 v_TexCoord;
 out float v_TexIndex;
 
+uniform mat4 u_MVP;
 
 void main()
 {
-    gl_Position = vec4(position, 1.0);
+    gl_Position = u_MVP * (vec4(position, 1.0));
     v_Color = color;
     v_TexCoord = texCoord;
     v_TexIndex = textureID;
@@ -29,7 +30,7 @@ in vec2 v_TexCoord;
 in float v_TexIndex;
 
 uniform vec4 u_Color;
-uniform sampler2D u_Textures[3];
+uniform sampler2D u_Textures[4];
 
 void main()
 {

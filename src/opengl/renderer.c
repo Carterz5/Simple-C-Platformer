@@ -20,7 +20,7 @@ bool GLLogCall(const char* function, const char* file, int line){
     return true;
 }
 
-void R_CreateQuad(Quad* quad, float x, float y, float textureID, float r, float g, float b, float a, float size){
+void R_CreateQuad(Quad* quad, float x, float y, float size, float r, float g, float b, float a, float textureID){
 
     quad->v0.Position[0] = x;
     quad->v0.Position[1] = y;
