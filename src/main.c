@@ -16,32 +16,15 @@
 #include "cglm/cglm.h"
 #include "cglm/mat4.h"
 #include "graphics.h"
+#include "menus.h"
 
-
-
-
-#define NK_INCLUDE_FIXED_TYPES
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_STANDARD_VARARGS
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
-#define NK_IMPLEMENTATION
-#define NK_GLFW_GL3_IMPLEMENTATION
-#define NK_KEYSTATE_BASED_INPUT
-#include "nuklear.h"
-#include "nuklear_glfw_gl3.h"
-
-#define MAX_VERTEX_BUFFER 512 * 1024
-#define MAX_ELEMENT_BUFFER 128 * 1024
 
 
 int main(void){
 
-    GLFWwindow* window = init_opengl();
+    GLFWwindow* glfwwindow = init_opengl();
 
-
+    Nuklear_window* nkwindow = NK_init(glfwwindow);
 
     unsigned int BatchIndices[1500];
     IB_Populate(250, BatchIndices, 1500);
@@ -130,7 +113,7 @@ int main(void){
     GLCall(glfwSwapInterval(1));
     double lasttime = glfwGetTime();
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(glfwwindow))
     {
         /* Render here */
 
@@ -141,6 +124,9 @@ int main(void){
         };
         lasttime += 1.0/TARGET_FPS;
 
+
+        NK_Draw(glfwwindow,nkwindow);
+
         glfwPollEvents();
 
 
@@ -150,14 +136,16 @@ int main(void){
 
 
 
+
+
+
         /* Swap front and back buffers */
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(glfwwindow);
 
 
         
     }
 
-    //GLCall(glDeleteProgram(shader));
     SH_Destruct(&batchshader);
     IB_Destruct(&ibbatch);
     VB_Destruct(&vbbatch);
@@ -165,6 +153,7 @@ int main(void){
     TX_Destruct(&Wtexture);
     TX_Destruct(&Ctexture);
 
+    NK_Destruct(nkwindow);
 
 
     glfwTerminate();

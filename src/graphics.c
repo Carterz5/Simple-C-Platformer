@@ -11,8 +11,11 @@ GLFWwindow* init_opengl(){
     GLFWwindow* window;
 
     /* Initialize the library */
-    if (!glfwInit())
-        return -1;
+    if (!glfwInit()){
+        printf("Error initializing glfw");
+        return NULL;
+    }
+
 
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -25,7 +28,8 @@ GLFWwindow* init_opengl(){
     if (!window)
     {
         glfwTerminate();
-        return -1;
+        printf("Error creating glfw window");
+        return NULL;
     }
 
     /* Make the window's context current */
@@ -44,3 +48,5 @@ GLFWwindow* init_opengl(){
 
     return window;
 }
+
+
