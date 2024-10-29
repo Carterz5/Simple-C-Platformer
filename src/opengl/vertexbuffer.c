@@ -10,11 +10,25 @@ void VB_Construct(const void* data, unsigned int size, VertexBuffer* VertexBuffe
     GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
 }
 
+void VB_Construct_Dynamic(unsigned int size, VertexBuffer* VertexBuffer){
+    GLCall(glGenBuffers(1, &VertexBuffer->RendererID));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, VertexBuffer->RendererID));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_DYNAMIC_DRAW));
+}
+
 void VB_Construct_Batch(unsigned int size, VertexBuffer* VertexBuffer){
     VertexBuffer->offset = 0;
     GLCall(glGenBuffers(1, &VertexBuffer->RendererID));
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, VertexBuffer->RendererID));
     GLCall(glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_DYNAMIC_DRAW));
+}
+
+
+void VB_AddToDynamic(VertexBuffer* VertexBuffer, unsigned int size, void* data){
+
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, VertexBuffer->RendererID));
+    GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, size, data))
+
 }
 
 

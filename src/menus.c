@@ -43,17 +43,40 @@ void NK_Destruct(Nuklear_window* nkwindow){
 }
 
 
-void NK_Draw(GLFWwindow* glfwwindow, Nuklear_window* nkwindow){
+void NK_Draw(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player){
 
     nk_glfw3_new_frame(&nkwindow->glfw);
 
-    if (nk_begin(nkwindow->ctx, "Test", nk_rect(50, 50, 230, 300),
+    if (nk_begin(nkwindow->ctx, "Debug Menu", nk_rect(50, 50, 230, 300),
         NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|
         NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE))
     {
 
-        nk_layout_row_dynamic(nkwindow->ctx, 20, 1);
-        nk_label(nkwindow->ctx, "Lamps", NK_TEXT_LEFT);
+        // Begin a custom row with a height of 30 and enough width for the two widgets
+        nk_layout_row_begin(nkwindow->ctx, NK_STATIC, 30, 2);
+
+        // Push width for the label
+        nk_layout_row_push(nkwindow->ctx, 100);
+        nk_label(nkwindow->ctx, "X Velocity:", NK_TEXT_LEFT);  // Display the label
+
+        // Push width for the float display
+        nk_layout_row_push(nkwindow->ctx, 50);
+        nk_labelf(nkwindow->ctx, NK_TEXT_LEFT, "%.2f", player->Xvelocity);  // Display the float value
+
+        nk_layout_row_end(nkwindow->ctx);  // End the custom row
+
+        // Begin a custom row with a height of 30 and enough width for the two widgets
+        nk_layout_row_begin(nkwindow->ctx, NK_STATIC, 30, 2);
+
+        // Push width for the label
+        nk_layout_row_push(nkwindow->ctx, 100);
+        nk_label(nkwindow->ctx, "Y Velocity:", NK_TEXT_LEFT);  // Display the label
+
+        // Push width for the float display
+        nk_layout_row_push(nkwindow->ctx, 50);
+        nk_labelf(nkwindow->ctx, NK_TEXT_LEFT, "%.2f", player->Yvelocity);  // Display the float value
+
+        nk_layout_row_end(nkwindow->ctx);  // End the custom row
 
     }
     nk_end(nkwindow->ctx);

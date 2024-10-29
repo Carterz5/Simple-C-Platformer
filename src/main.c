@@ -16,8 +16,17 @@
 #include "cglm/cglm.h"
 #include "cglm/mat4.h"
 #include "graphics.h"
+#include "game.h"
 #include "menus.h"
 
+
+// movement prototype
+// store level data as array 2D
+// add sound
+// add collision
+//
+//
+//
 
 
 int main(void){
@@ -25,52 +34,22 @@ int main(void){
     GLFWwindow* glfwwindow = init_opengl();
 
     Nuklear_window* nkwindow = NK_init(glfwwindow);
+    Player P1;
+    init_player(&P1, 5.0f);
 
-    unsigned int BatchIndices[1500];
-    IB_Populate(250, BatchIndices, 1500);
-
-
-    // BATCHING
-    VertexArray vabatch;
-    VA_Construct(&vabatch);
-
-    VertexBuffer vbbatch;
-    VB_Construct_Batch(sizeof(Vertex) * 1000, &vbbatch);
+    Renderer player_renderer;
+    Renderer batch_renderer;
+    Create_Batch_Renderer(&batch_renderer,"../shaders/Batch.glsl", 1000);
+    Create_Player_Renderer(&player_renderer,"../shaders/Batch.glsl");
 
     Quad tiles[3];
-
-
-
 
     R_CreateQuad(&tiles[0], 448.0f, 384.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 3.0f);
     R_CreateQuad(&tiles[1], 512.0f, 384.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 3.0f);
     R_CreateQuad(&tiles[2], 576.0f, 384.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 3.0f);
 
+    VB_AddToBatch(&batch_renderer.vb, sizeof(tiles), tiles);
 
-
-    VB_AddToBatch(&vbbatch, sizeof(tiles), tiles);
-
-
-
-    VertexBufferLayout vblbatch;
-    VBL_Construct(&vblbatch);
-    VBL_Pushfloat(3, &vblbatch);
-    VBL_Pushfloat(4, &vblbatch);
-    VBL_Pushfloat(2, &vblbatch);
-    VBL_Pushfloat(1, &vblbatch);
-    VA_AddBuffer(&vbbatch, &vblbatch, &vabatch);
-    
-    IndexBuffer ibbatch;
-    
-    IB_Construct(BatchIndices, 1500, &ibbatch);
-
-
-    Shader batchshader;
-    SH_Construct(&batchshader,"../shaders/Batch.glsl");
-    SH_Bind(&batchshader);
-
-
-    
 
     Texture Wtexture;
     Texture Ctexture;
@@ -83,26 +62,7 @@ int main(void){
     TX_Bind(3, &blocktex);
     //int samplers[32] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
     int samplers[4] = {0, 1, 2, 3};
-    SH_SetUniform1iv(&batchshader, "u_Textures", 4, samplers);
-
-    mat4 bmvp;
-    mat4 batchproj;
-    mat4 batchview;
-    mat4 batchmodel;
-    mat4 batchtemp;
-    vec3 bvtranslate = {0.0f, 0.0f, 0.0f};
-    vec3 bmtranslate = {0.0f, 0.0f, 0.0f};
-    glm_mat4_identity(batchmodel);
-    glm_mat4_identity(batchview);
-
-    glm_ortho(0.0f, 1024.0f, 0.0f, 768.0f, -1.0f, 1.0f, batchproj);
-    glm_translate(batchview, bvtranslate);
-    glm_translate(batchmodel, bmtranslate);
-
-    glm_mat4_mul(batchproj, batchview, batchtemp);
-    glm_mat4_mul(batchtemp, batchmodel, bmvp);
-
-    SH_SetUniformMat4f(&batchshader, "u_MVP", bmvp);
+    SH_SetUniform1iv(&batch_renderer.shader, "u_Textures", 4, samplers);
     
 
 
@@ -125,31 +85,31 @@ int main(void){
         lasttime += 1.0/TARGET_FPS;
 
 
-        NK_Draw(glfwwindow,nkwindow);
+        NK_Draw(glfwwindow, nkwindow, &P1);
 
-        glfwPollEvents();
-
-
-        SH_Bind(&batchshader);
-        R_Draw(&vabatch, &ibbatch, &batchshader);
+        
 
 
-
-
-
+        SH_Bind(&batch_renderer.shader);
+        R_Draw(&batch_renderer.va, &batch_renderer.ib, &batch_renderer.shader);
+        Draw_Player(&player_renderer, &P1);
 
 
         /* Swap front and back buffers */
         glfwSwapBuffers(glfwwindow);
 
-
+        glfwPollEvents();
         
+        process_inputs(&P1);
+        process_physics(&P1);
+
+
     }
 
-    SH_Destruct(&batchshader);
-    IB_Destruct(&ibbatch);
-    VB_Destruct(&vbbatch);
-    VA_Destruct(&vabatch);
+    SH_Destruct(&batch_renderer.shader);
+    IB_Destruct(&batch_renderer.ib);
+    VB_Destruct(&batch_renderer.vb);
+    VA_Destruct(&batch_renderer.va);
     TX_Destruct(&Wtexture);
     TX_Destruct(&Ctexture);
 

@@ -51,6 +51,40 @@ void IB_Populate(unsigned int objectcount, unsigned int* indices, unsigned int a
 
 }
 
+unsigned int* IB_Populate_Dynamic(unsigned int indexcount, unsigned int* indices){
+
+    
+    unsigned int loops = 0;
+    unsigned int tier = 0;
+    for (unsigned int i = 0; i < indexcount; i++){
+        switch (loops){
+        case 3:
+            arrput(indices, tier+2);
+            loops++;
+            break;
+        case 4:
+            arrput(indices, tier+3);
+            loops++;
+            break;
+        case 5:
+            arrput(indices, tier);
+            tier = tier+4;
+            loops = 0;
+            break;
+        
+        default:
+            arrput(indices, tier+loops);
+            loops++;
+            break;
+        }
+    }
+    
+    return indices;
+
+}
+
+
+
 void IB_Bind(IndexBuffer* IndexBuffer){
     GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBuffer->RendererID));
 };

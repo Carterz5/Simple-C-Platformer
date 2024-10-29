@@ -11,8 +11,10 @@ typedef struct VertexBuffer {
 } VertexBuffer;
 
 void VB_Construct(const void* data, unsigned int size, VertexBuffer* VertexBuffer);
+void VB_Construct_Dynamic(unsigned int size, VertexBuffer* VertexBuffer);
 void VB_Construct_Batch(unsigned int size, VertexBuffer* VertexBuffer);
 void VB_AddToBatch(VertexBuffer* VertexBuffer, unsigned int size, void* data);
+void VB_AddToDynamic(VertexBuffer* VertexBuffer, unsigned int size, void* data);
 void VB_Destruct(VertexBuffer* VertexBuffer);
 void VB_Bind(VertexBuffer* VertexBuffer);
 void VB_Unbind();
