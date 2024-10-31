@@ -14,6 +14,7 @@
 #define NK_KEYSTATE_BASED_INPUT
 #include "nuklear.h"
 #include "nuklear_glfw_gl3.h"
+#include "game.h"
 
 
 
@@ -77,6 +78,19 @@ void NK_Draw(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player){
         nk_labelf(nkwindow->ctx, NK_TEXT_LEFT, "%.2f", player->Yvelocity);  // Display the float value
 
         nk_layout_row_end(nkwindow->ctx);  // End the custom row
+
+        nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
+        nk_property_float(nkwindow->ctx, "Jump Height", -100.0f, &player->jump_height, 100.0f, 0.0f, 0.5f);
+
+        nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
+        nk_property_float(nkwindow->ctx, "Acceleration", -100.0f, &player->acceleration, 100.0f, 0.0f, 0.5f);
+
+        nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
+        nk_property_float(nkwindow->ctx, "Friction", -100.0f, &player->friction, 100.0f, 0.0f, 0.5f);
+
+        nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
+        nk_property_float(nkwindow->ctx, "Gravity", -100.0f, &player->gravity, 100.0f, 0.0f, 0.5f);
+
 
     }
     nk_end(nkwindow->ctx);

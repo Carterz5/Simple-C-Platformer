@@ -1,5 +1,5 @@
 #include "graphics.h"
-
+#include "game.h"
 
 
 
@@ -127,7 +127,7 @@ void Create_Player_Renderer(Renderer* renderer, char* shaderpath){
 void Draw_Player(Renderer* renderer, Player* player){
 
     Quad Pquad;
-    R_CreateQuad(&Pquad, 0.0f, 0.0f, 32.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
+    R_CreateQuad(&Pquad, 0.0f, 0.0f, player->size, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f);
     VB_AddToDynamic(&renderer->vb, sizeof(Quad), &Pquad);
 
     if(player->Xpos > 992.0f){
@@ -159,5 +159,24 @@ void Draw_Player(Renderer* renderer, Player* player){
     R_Draw(&renderer->va, &renderer->ib, &renderer->shader);
 
     glm_mat4_identity(renderer->model);
+
+}
+
+
+
+void load_textures(Shader* batchshader, Shader* playershader){
+
+    Texture player;
+    Texture blocktex;
+    TX_Construct("../assets/textures/testtile.png", &blocktex);
+    TX_Construct("../assets/textures/spring boy.png", &player);
+    TX_Bind(1, &player);
+    TX_Bind(2, &blocktex);
+    //int samplers[32] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
+    int samplers[4] = {0, 1, 2, 3};
+    SH_SetUniform1iv(batchshader, "u_Textures", 4, samplers);
+    SH_SetUniform1iv(playershader, "u_Textures", 4, samplers);
+
+
 
 }
