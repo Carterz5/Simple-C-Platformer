@@ -141,7 +141,7 @@ void process_collisions(Player* player, Quad tiles[]){
             // Determine the smallest overlap to find the collision side
             if (overlapTop < overlapBottom && overlapTop < overlapLeft && overlapTop < overlapRight) {
                 // Collision on top side of player
-                player->Ypos = quadBottom - player->size;  // Adjust position to sit on top
+                player->Ypos = quadBottom - player->size;  
                 player->Yvelocity = 0;                     // Stop vertical movement
             } else if (overlapBottom < overlapTop && overlapBottom < overlapLeft && overlapBottom < overlapRight) {
                 // Collision on bottom side of player
