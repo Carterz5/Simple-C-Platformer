@@ -63,7 +63,7 @@ void NK_Draw(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player){
         // Push width for the float display
         nk_layout_row_push(nkwindow->ctx, 50);
         nk_labelf(nkwindow->ctx, NK_TEXT_LEFT, "%.2f", player->Xvelocity);  // Display the float value
-
+        
         nk_layout_row_end(nkwindow->ctx);  // End the custom row
 
         // Begin a custom row with a height of 30 and enough width for the two widgets
@@ -78,6 +78,11 @@ void NK_Draw(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player){
         nk_labelf(nkwindow->ctx, NK_TEXT_LEFT, "%.2f", player->Yvelocity);  // Display the float value
 
         nk_layout_row_end(nkwindow->ctx);  // End the custom row
+
+        nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
+        nk_labelf(nkwindow->ctx, NK_TEXT_LEFT, "Xtile: %d", player->Xtile);
+        nk_labelf(nkwindow->ctx, NK_TEXT_LEFT, "Ytile: %d", player->Ytile);
+
 
         nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
         nk_property_float(nkwindow->ctx, "Jump Height", -100.0f, &player->jump_height, 100.0f, 0.0f, 0.5f);

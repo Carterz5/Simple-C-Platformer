@@ -9,6 +9,7 @@
 
 
 typedef struct Player Player;
+typedef struct Game Game;
 
 typedef struct Renderer{
     VertexArray va;
@@ -22,7 +23,7 @@ typedef struct Renderer{
 
 
 
-GLFWwindow* init_opengl();
+GLFWwindow* init_opengl(Game* game);
 void Create_Batch_Renderer(Renderer* renderer, char* shaderpath, unsigned int max_vertices);
 void Create_Player_Renderer(Renderer* renderer, char* shaderpath);
 void Draw_Player(Renderer* renderer, Player* player);

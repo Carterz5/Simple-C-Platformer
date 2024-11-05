@@ -2,31 +2,31 @@
 
 #include <stdio.h>
 
+ Inputs callback_keys;
 
-int UpState = 0;
-int DownState = 0;
-int LeftState = 0;
-int RightState = 0;
-int SpaceState = 0;
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 
+    
     switch (key){
     case GLFW_KEY_UP:
-        UpState = action;
+        callback_keys.UpState = action;
         break;
     case GLFW_KEY_DOWN:
-        DownState = action;
+        callback_keys.DownState = action;
         break;
     case GLFW_KEY_LEFT:
-        LeftState = action;
+        callback_keys.LeftState = action;
         break;
     case GLFW_KEY_RIGHT:
-        RightState = action;
+        callback_keys.RightState = action;
         break;
     case GLFW_KEY_SPACE:
-        SpaceState = action;
+        callback_keys.SpaceState = action;
+        break;
+    case GLFW_KEY_F12:
+        callback_keys.F12State = action;
         break;
     default:
         break;
@@ -37,17 +37,29 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
-void process_inputs(Player* player){
+void process_inputs(Player* player, Inputs* inputs){
+
 
     static unsigned int jump_cooldown = 0;
 
-    if (RightState > GLFW_RELEASE){
+
+    if(callback_keys.F12State == GLFW_PRESS && callback_keys.F12Toggle == false){
+        printf("toggle on\n");
+        callback_keys.F12Toggle = true;
+    } else if (callback_keys.F12State == GLFW_PRESS && callback_keys.F12Toggle == true){
+        callback_keys.F12Toggle = false;
+        printf("toggle off\n");
+    }
+
+
+
+    if (callback_keys.RightState > GLFW_RELEASE){
        player->Xvelocity += player->acceleration;
     }
-    if (LeftState > GLFW_RELEASE){
+    if (callback_keys.LeftState > GLFW_RELEASE){
        player->Xvelocity -= player->acceleration;
     }
-    if ((UpState == GLFW_PRESS || SpaceState == GLFW_PRESS) && jump_cooldown == 0){
+    if ((callback_keys.UpState == GLFW_PRESS || callback_keys.SpaceState == GLFW_PRESS) && jump_cooldown == 0){
         player->Yvelocity = player->jump_height;
         jump_cooldown = 20;
     }
@@ -55,10 +67,11 @@ void process_inputs(Player* player){
     if(jump_cooldown > 0){
         jump_cooldown--;
     }
-    
+
+    *inputs = callback_keys;
 }
 
-void init_player(Player* player, float acceleration, float size, float jump_height, float gravity, float friction){
+void init_player(Player* player, float acceleration, float size, float jump_height, float gravity, float friction, float textureID){
     player->acceleration = acceleration;
     player->Xpos = 512.0f;
     player->Ypos = 500.0f;
@@ -70,6 +83,21 @@ void init_player(Player* player, float acceleration, float size, float jump_heig
     player->jump_height = jump_height;
     player->gravity = gravity;
     player->friction = friction;
+    R_CreateQuad(&player->quad, 0.0f, 0.0f, player->size, 0.0f, 1.0f, 0.0f, 1.0f, textureID);
+
+
+
+}
+
+void init_game(Game* game){
+    game->scene = 0;
+    game->inputs.DownState = 0;
+    game->inputs.UpState = 0;
+    game->inputs.RightState = 0;
+    game->inputs.LeftState = 0;
+    game->inputs.SpaceState = 0;
+    game->inputs.F12State = 0;
+    game->inputs.F12Toggle = false;
 
 }
 
@@ -81,17 +109,13 @@ void process_physics(Player* player){
         player->Xvelocity = -15.0f;
     }
 
-    // if(player->Yvelocity > 20.0f){
-    //     player->Yvelocity = 20.0f;
-    // } else if (player->Yvelocity < -20.0f){
-    //     player->Yvelocity = -20.0f;
-    // }
+
     if(player->Yvelocity < -20.0f){
         player->Yvelocity = -20.0f;
     }
 
 
-    if(player->Xvelocity <= 2.0f && player->Xvelocity >= -2.0f){
+    if(player->Xvelocity <= 1.0f && player->Xvelocity >= -1.0f){
         player->Xvelocity = 0.0f;
     }
     if(player->Xvelocity > 0.0f){
@@ -109,6 +133,14 @@ void process_physics(Player* player){
 
 }
 
+void update_player_coords(Player* player){
+
+    player->Xtile = (int)(player->Xpos / 64);
+    player->Ytile = (int)(player->Ypos / 64);
+
+
+}
+
 void process_collisions(Player* player, Quad tiles[]){
 
     float playerLeft = player->Xpos;
@@ -118,7 +150,7 @@ void process_collisions(Player* player, Quad tiles[]){
 
 
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 16; i++) {
 
         float quadLeft = tiles[i].v0.Position[0];
         float quadRight = tiles[i].v1.Position[0];
@@ -141,19 +173,19 @@ void process_collisions(Player* player, Quad tiles[]){
             // Determine the smallest overlap to find the collision side
             if (overlapTop < overlapBottom && overlapTop < overlapLeft && overlapTop < overlapRight) {
                 // Collision on top side of player
-                player->Ypos = quadBottom - player->size;  
+                player->Ypos = quadBottom - player->size - 1.0f;  
                 player->Yvelocity = 0;                     // Stop vertical movement
             } else if (overlapBottom < overlapTop && overlapBottom < overlapLeft && overlapBottom < overlapRight) {
                 // Collision on bottom side of player
-                player->Ypos = quadTop;                    
+                player->Ypos = quadTop + 1.0f;                    
                 player->Yvelocity = 0;                     // Stop vertical movement
-            } else if (overlapLeft < overlapTop && overlapLeft < overlapBottom && overlapLeft < overlapRight) {
+            } else if (overlapLeft < overlapTop && overlapLeft < overlapBottom && overlapLeft < overlapRight && overlapLeft > 1.0f) {
                 // Collision on left side of player
-                player->Xpos = quadRight;                  
+                player->Xpos = quadRight + 1.0f;                  
                 player->Xvelocity = 0;                     // Stop horizontal movement
-            } else if (overlapRight < overlapTop && overlapRight < overlapBottom && overlapRight < overlapLeft) {
+            } else if (overlapRight < overlapTop && overlapRight < overlapBottom && overlapRight < overlapLeft && overlapRight > 1.0f) {
                 // Collision on right side of player
-                player->Xpos = quadLeft - player->size;    
+                player->Xpos = quadLeft - player->size - 1.0f;    
                 player->Xvelocity = 0;                     // Stop horizontal movement
             }
 

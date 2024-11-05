@@ -29,29 +29,48 @@
 
 
 int main(void){
-
-    GLFWwindow* glfwwindow = init_opengl();
+    Game game;
+    init_game(&game);
+    GLFWwindow* glfwwindow = init_opengl(&game);
 
     Nuklear_window* nkwindow = NK_init(glfwwindow);
-    Player P1;
-    init_player(&P1, 2.5f, 32.0f, 15.0f, 2.0f, 2.0f);
+
 
     Renderer player_renderer;
     Renderer batch_renderer;
     Create_Batch_Renderer(&batch_renderer,"../shaders/Batch.glsl", 1000);
     Create_Player_Renderer(&player_renderer,"../shaders/Batch.glsl");
 
-    Quad tiles[3];
 
-    R_CreateQuad(&tiles[0], 448.0f, 384.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[1], 512.0f, 384.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[2], 576.0f, 384.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    Player P1;
+    init_player(&P1, 2.5f, 32.0f, 15.0f, 2.0f, 2.0f, 1.0f);
+    VB_AddToDynamic(&player_renderer.vb, sizeof(Quad), &P1.quad);
+
+
+    Quad tiles[16];
+
+    R_CreateQuad(&tiles[0], 0.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[1], 64.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[2], 128.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[3], 192.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[4], 256.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[5], 320.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[6], 384.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[7], 448.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[8], 512.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[9], 576.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[10], 640.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[11], 704.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[12], 768.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[13], 832.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[14], 896.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    R_CreateQuad(&tiles[15], 960.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
 
     VB_AddToBatch(&batch_renderer.vb, sizeof(tiles), tiles);
 
     load_textures(&batch_renderer.shader, &player_renderer.shader);
    
-
+    // glfwSetWindowUserPointer(glfwwindow, &game.inputs);
 
     VA_Unbind();
     SH_Unbind();
@@ -60,6 +79,7 @@ int main(void){
     GLCall(glfwSwapInterval(1));
     double lasttime = glfwGetTime();
     /* Loop until the user closes the window */
+    glClearColor(nkwindow->bg.r, nkwindow->bg.g, nkwindow->bg.b, nkwindow->bg.a);
     while (!glfwWindowShouldClose(glfwwindow))
     {
         /* Render here */
@@ -70,26 +90,28 @@ int main(void){
 
         };
         lasttime += 1.0/TARGET_FPS;
+        
+        if(game.inputs.F12Toggle == true){
+            NK_Draw(glfwwindow, nkwindow, &P1);
+        }
 
-
-        NK_Draw(glfwwindow, nkwindow, &P1);
 
         
 
 
-        //SH_Bind(&batch_renderer.shader);
         R_Draw(&batch_renderer.va, &batch_renderer.ib, &batch_renderer.shader);
         Draw_Player(&player_renderer, &P1);
 
 
         /* Swap front and back buffers */
         glfwSwapBuffers(glfwwindow);
-
+        R_Clear();
         glfwPollEvents();
-        
-        process_inputs(&P1);
+
+        process_inputs(&P1, &game.inputs);
         process_physics(&P1);
         process_collisions(&P1, tiles);
+        update_player_coords(&P1);
 
 
     }

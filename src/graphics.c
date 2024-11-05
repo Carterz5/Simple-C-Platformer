@@ -7,7 +7,7 @@
 
 
 
-GLFWwindow* init_opengl(){
+GLFWwindow* init_opengl(Game* game){
 
     GLFWwindow* window;
 
@@ -125,10 +125,6 @@ void Create_Player_Renderer(Renderer* renderer, char* shaderpath){
 
 
 void Draw_Player(Renderer* renderer, Player* player){
-
-    Quad Pquad;
-    R_CreateQuad(&Pquad, 0.0f, 0.0f, player->size, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f);
-    VB_AddToDynamic(&renderer->vb, sizeof(Quad), &Pquad);
 
     if(player->Xpos > 992.0f){
         player->Xpos = 992.0f;
