@@ -23,7 +23,7 @@
 
 // store level data as array 2D
 // add sound
-// change draw_player function to not rewrite data
+// 
 //
 //
 
@@ -43,30 +43,54 @@ int main(void){
 
 
     Player P1;
-    init_player(&P1, 2.5f, 32.0f, 15.0f, 2.0f, 2.0f, 1.0f);
+    init_player(&P1, 2.5f, 10.0f, 10.0f, 32.0f, 15.0f, 2.0f, 2.0f, 1.0f);
     VB_AddToDynamic(&player_renderer.vb, sizeof(Quad), &P1.quad);
 
+    Quad testlevel_data[16][12];
+    float testlevel_array[192] = {0.0f};
 
-    Quad tiles[16];
+    for (int i = 0; i < 16; i++){
+        testlevel_array[i] = 2.0f;
+    }
+    
+    
 
-    R_CreateQuad(&tiles[0], 0.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[1], 64.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[2], 128.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[3], 192.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[4], 256.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[5], 320.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[6], 384.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[7], 448.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[8], 512.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[9], 576.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[10], 640.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[11], 704.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[12], 768.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[13], 832.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[14], 896.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    R_CreateQuad(&tiles[15], 960.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    testlevel_array[16] = 2.0f;
+    testlevel_array[32] = 2.0f;
+    testlevel_array[48] = 2.0f;
+    testlevel_array[64] = 2.0f;
 
-    VB_AddToBatch(&batch_renderer.vb, sizeof(tiles), tiles);
+    testlevel_array[31] = 2.0f;
+    testlevel_array[47] = 2.0f;
+    testlevel_array[63] = 2.0f;
+    testlevel_array[79] = 2.0f;
+
+
+    testlevel_array[87] = 2.0f;
+    testlevel_array[88] = 2.0f;
+    testlevel_array[89] = 2.0f;
+    
+    generate_level_data(testlevel_data, testlevel_array);
+    // Quad tiles[16];
+
+    // R_CreateQuad(&tiles[0], 0.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[1], 64.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[2], 128.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[3], 192.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[4], 256.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[5], 320.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[6], 384.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[7], 448.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[8], 512.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[9], 576.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[10], 640.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[11], 704.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[12], 768.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[13], 832.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[14], 896.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+    // R_CreateQuad(&tiles[15], 960.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
+
+    VB_AddToBatch(&batch_renderer.vb, sizeof(testlevel_data), testlevel_data);
 
     load_textures(&batch_renderer.shader, &player_renderer.shader);
    
@@ -77,41 +101,74 @@ int main(void){
     VB_Unbind();
     IB_Unbind();
     GLCall(glfwSwapInterval(1));
-    double lasttime = glfwGetTime();
+
+    const int FPS_SAMPLES = 100;
+    double fpsSum = 0.0;
+    int fpsCount = 0;
+
+    const double PHYSICS_TIME_STEP = 1.0 / 60.0;
+    double previousTime = glfwGetTime();
+    double accumulator = 0.0;
     /* Loop until the user closes the window */
     glClearColor(nkwindow->bg.r, nkwindow->bg.g, nkwindow->bg.b, nkwindow->bg.a);
-    while (!glfwWindowShouldClose(glfwwindow))
-    {
+    while (!glfwWindowShouldClose(glfwwindow)){
         /* Render here */
 
+        double currentTime = glfwGetTime();
+        double frameTime = currentTime - previousTime;
+        previousTime = currentTime;
 
-        //Different way to limit framerate than Cherno. glfwSwapInterval was not working on virtual machine.
-        while (glfwGetTime() < lasttime + 1.0/TARGET_FPS) {
 
-        };
-        lasttime += 1.0/TARGET_FPS;
-        
-        if(game.inputs.F12Toggle == true){
-            NK_Draw(glfwwindow, nkwindow, &P1);
+        if (frameTime > 0.25) {
+            frameTime = 0.25;
+        }
+
+        accumulator += frameTime;
+
+
+        // Update FPS average
+        double currentFPS = 1.0 / frameTime;
+        fpsSum += currentFPS;
+        fpsCount++;
+
+
+        // Every 100 frames, output the average FPS and reset
+        if (fpsCount == FPS_SAMPLES) {
+            double averageFPS = fpsSum / FPS_SAMPLES;
+            char title[256];
+            snprintf(title, sizeof(title), "FPS: %.2f", averageFPS);
+            glfwSetWindowTitle(glfwwindow, title);
+            fpsSum = 0.0;
+            fpsCount = 0;
         }
 
 
-        
+        // Run fixed timestep updates
+        while (accumulator >= PHYSICS_TIME_STEP) {
+            //updatePhysics(PHYSICS_TIME_STEP);  // Update physics at fixed rate
 
+            process_inputs(&P1, &game.inputs);
+            process_physics(&P1);
+            process_collisions(&P1, testlevel_data);
+            update_player_coords(&P1);
+            accumulator -= PHYSICS_TIME_STEP;
+        }
 
+     
+    
         R_Draw(&batch_renderer.va, &batch_renderer.ib, &batch_renderer.shader);
         Draw_Player(&player_renderer, &P1);
 
+        if(game.inputs.F12Toggle == true){
+            NK_Draw(glfwwindow, nkwindow, &P1);
+        }
 
         /* Swap front and back buffers */
         glfwSwapBuffers(glfwwindow);
         R_Clear();
         glfwPollEvents();
 
-        process_inputs(&P1, &game.inputs);
-        process_physics(&P1);
-        process_collisions(&P1, tiles);
-        update_player_coords(&P1);
+
 
 
     }

@@ -99,7 +99,6 @@ void NK_Draw(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player){
 
     }
     nk_end(nkwindow->ctx);
-    R_Clear();
     glClearColor(nkwindow->bg.r, nkwindow->bg.g, nkwindow->bg.b, nkwindow->bg.a);
 
 
