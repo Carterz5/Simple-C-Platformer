@@ -24,8 +24,8 @@ typedef struct Renderer{
 
 
 GLFWwindow* init_opengl(Game* game);
-void Create_Batch_Renderer(Renderer* renderer, char* shaderpath, unsigned int max_vertices);
-void Create_Player_Renderer(Renderer* renderer, char* shaderpath);
+Renderer* Create_Batch_Renderer(char* shaderpath, unsigned int max_vertices);
+Renderer* Create_Player_Renderer(char* shaderpath);
 void Draw_Player(Renderer* renderer, Player* player);
 void load_textures(Shader* batchshader, Shader* playershader);
 

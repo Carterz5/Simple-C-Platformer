@@ -85,16 +85,22 @@ void NK_Draw(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player){
 
 
         nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
-        nk_property_float(nkwindow->ctx, "Jump Height", -100.0f, &player->jump_height, 100.0f, 0.0f, 0.5f);
+        nk_property_float(nkwindow->ctx, "Jump Height", -100.0f, &player->jump_height, 100.0f, 0.0f, 0.1f);
 
         nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
-        nk_property_float(nkwindow->ctx, "Acceleration", -100.0f, &player->acceleration, 100.0f, 0.0f, 0.5f);
+        nk_property_float(nkwindow->ctx, "Acceleration", -100.0f, &player->acceleration, 100.0f, 0.0f, 0.1f);
 
         nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
-        nk_property_float(nkwindow->ctx, "Friction", -100.0f, &player->friction, 100.0f, 0.0f, 0.5f);
+        nk_property_float(nkwindow->ctx, "Friction", -100.0f, &player->friction, 100.0f, 0.0f, 0.1f);
 
         nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
-        nk_property_float(nkwindow->ctx, "Gravity", -100.0f, &player->gravity, 100.0f, 0.0f, 0.5f);
+        nk_property_float(nkwindow->ctx, "Gravity", -100.0f, &player->gravity, 100.0f, 0.0f, 0.1f);
+
+        nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
+        nk_property_float(nkwindow->ctx, "MaxSpeed", -100.0f, &player->maxspeed, 100.0f, 0.0f, 0.1f);
+
+        nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
+        nk_property_float(nkwindow->ctx, "MaxFall", -100.0f, &player->maxfall, 100.0f, 0.0f, 0.1f);
 
 
     }

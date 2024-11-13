@@ -28,6 +28,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     case GLFW_KEY_F12:
         callback_keys.F12State = action;
         break;
+    case GLFW_KEY_F1:
+        callback_keys.F1State = action;
+        break;
+    case GLFW_KEY_F2:
+        callback_keys.F2State = action;
+        break;
     default:
         break;
     }
@@ -43,12 +49,10 @@ void process_inputs(Player* player, Inputs* inputs){
     static unsigned int jump_cooldown = 0;
 
 
-    if(callback_keys.F12State == GLFW_PRESS && callback_keys.F12Toggle == false){
-        printf("toggle on\n");
+    if(callback_keys.F12State == GLFW_RELEASE && callback_keys.LastF12State == GLFW_PRESS && callback_keys.F12Toggle == false){
         callback_keys.F12Toggle = true;
-    } else if (callback_keys.F12State == GLFW_PRESS && callback_keys.F12Toggle == true){
+    } else if (callback_keys.F12State == GLFW_RELEASE && callback_keys.LastF12State == GLFW_PRESS && callback_keys.F12Toggle == true){
         callback_keys.F12Toggle = false;
-        printf("toggle off\n");
     }
 
 
@@ -69,10 +73,15 @@ void process_inputs(Player* player, Inputs* inputs){
         jump_cooldown--;
     }
 
+
+    callback_keys.LastF12State = callback_keys.F12State;
+
     *inputs = callback_keys;
 }
 
-void init_player(Player* player, float acceleration, float maxspeed, float maxfall, float size, float jump_height, float gravity, float friction, float textureID){
+Player* init_player(float acceleration, float maxspeed, float maxfall, float size, float jump_height, float gravity, float friction, float textureID){
+    Player* player = malloc(sizeof(Player));
+    
     player->acceleration = acceleration;
     player->Xpos = 512.0f;
     player->Ypos = 500.0f;
@@ -93,11 +102,12 @@ void init_player(Player* player, float acceleration, float maxspeed, float maxfa
 
     R_CreateQuad(&player->quad, 0.0f, 0.0f, player->size, 0.0f, 1.0f, 0.0f, 1.0f, textureID);
 
-
+    return player;
 
 }
 
-void init_game(Game* game){
+Game* init_game(){
+    Game* game = malloc(sizeof(Game));
     game->scene = 0;
     game->inputs.DownState = 0;
     game->inputs.UpState = 0;
@@ -105,8 +115,11 @@ void init_game(Game* game){
     game->inputs.LeftState = 0;
     game->inputs.SpaceState = 0;
     game->inputs.F12State = 0;
+    game->inputs.LastF12State = 0;
     game->inputs.F12Toggle = false;
-
+    game->inputs.F1State = 0;
+    game->inputs.F2State = 0;
+    return game;
 }
 
 void process_physics(Player* player){
@@ -221,20 +234,20 @@ void process_collisions(Player* player, Quad tiles[16][12]){
             // Determine the smallest overlap to find the collision side
             if (overlapTop < overlapBottom && overlapTop < overlapLeft && overlapTop < overlapRight) {
                 // Collision on top side of player
-                player->Ypos = quadBottom - player->size - 1.0f;  
+                player->Ypos = quadBottom - player->size;  
                 player->Yvelocity = 0;                     // Stop vertical movement
             } else if (overlapBottom < overlapTop && overlapBottom < overlapLeft && overlapBottom < overlapRight) {
                 // Collision on bottom side of player
-                player->Ypos = quadTop + 1.0f;                    
+                player->Ypos = quadTop;                    
                 player->Yvelocity = 0;                     // Stop vertical movement
                 player->jumps = 1;
             } else if (overlapLeft < overlapTop && overlapLeft < overlapBottom && overlapLeft < overlapRight && overlapLeft > 1.0f) {
                 // Collision on left side of player
-                player->Xpos = quadRight + 1.0f;                  
+                player->Xpos = quadRight;                 
                 player->Xvelocity = 0;                     // Stop horizontal movement
             } else if (overlapRight < overlapTop && overlapRight < overlapBottom && overlapRight < overlapLeft && overlapRight > 1.0f) {
                 // Collision on right side of player
-                player->Xpos = quadLeft - player->size - 1.0f;    
+                player->Xpos = quadLeft - player->size;    
                 player->Xvelocity = 0;                     // Stop horizontal movement
             }
 
@@ -301,5 +314,43 @@ void generate_level_data(Quad stage_data[16][12], float stage_array[192]){
 
 
 
+
+}
+
+
+
+void load_level_data(Quad level_data[4][16][12]){
+
+    
+    // Test level
+    float testlevel_array[192] = {0.0f};
+
+    for (int i = 0; i < 16; i++){
+        testlevel_array[i] = 2.0f;
+    }
+    testlevel_array[16] = 2.0f;
+    testlevel_array[32] = 2.0f;
+    testlevel_array[48] = 2.0f;
+    testlevel_array[64] = 2.0f;
+
+    testlevel_array[31] = 2.0f;
+    testlevel_array[47] = 2.0f;
+    testlevel_array[63] = 2.0f;
+    testlevel_array[79] = 2.0f;
+
+
+    testlevel_array[87] = 2.0f;
+    testlevel_array[88] = 2.0f;
+    testlevel_array[89] = 2.0f;
+
+    generate_level_data(level_data[0],testlevel_array);
+
+
+    float level1_array[192] = {0.0f};
+
+    for (int i = 0; i < 16; i++){
+        level1_array[i] = 2.0f;
+    }
+    generate_level_data(level_data[1],level1_array);
 
 }

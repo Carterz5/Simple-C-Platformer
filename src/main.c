@@ -21,78 +21,38 @@
 
 
 
-// store level data as array 2D
-// add sound
 // 
+// add sound
+// fix bouncy bug
 //
 //
 
 
 int main(void){
-    Game game;
-    init_game(&game);
-    GLFWwindow* glfwwindow = init_opengl(&game);
+    Game* game = init_game();
+
+    GLFWwindow* glfwwindow = init_opengl(game);
 
     Nuklear_window* nkwindow = NK_init(glfwwindow);
 
 
-    Renderer player_renderer;
-    Renderer batch_renderer;
-    Create_Batch_Renderer(&batch_renderer,"../shaders/Batch.glsl", 1000);
-    Create_Player_Renderer(&player_renderer,"../shaders/Batch.glsl");
+    Renderer* player_renderer = Create_Player_Renderer("../shaders/Batch.glsl");;
+    Renderer* batch_renderer = Create_Batch_Renderer("../shaders/Batch.glsl", 1000);
 
 
-    Player P1;
-    init_player(&P1, 2.5f, 10.0f, 10.0f, 32.0f, 15.0f, 2.0f, 2.0f, 1.0f);
-    VB_AddToDynamic(&player_renderer.vb, sizeof(Quad), &P1.quad);
+    Player* P1 = init_player(2.5f, 10.0f, 10.0f, 32.0f, 15.0f, 2.0f, 2.0f, 1.0f);
 
-    Quad testlevel_data[16][12];
-    float testlevel_array[192] = {0.0f};
-
-    for (int i = 0; i < 16; i++){
-        testlevel_array[i] = 2.0f;
-    }
-    
-    
-
-    testlevel_array[16] = 2.0f;
-    testlevel_array[32] = 2.0f;
-    testlevel_array[48] = 2.0f;
-    testlevel_array[64] = 2.0f;
-
-    testlevel_array[31] = 2.0f;
-    testlevel_array[47] = 2.0f;
-    testlevel_array[63] = 2.0f;
-    testlevel_array[79] = 2.0f;
+    VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
 
 
-    testlevel_array[87] = 2.0f;
-    testlevel_array[88] = 2.0f;
-    testlevel_array[89] = 2.0f;
-    
-    generate_level_data(testlevel_data, testlevel_array);
-    // Quad tiles[16];
+    Quad level_data[4][16][12];
 
-    // R_CreateQuad(&tiles[0], 0.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[1], 64.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[2], 128.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[3], 192.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[4], 256.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[5], 320.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[6], 384.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[7], 448.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[8], 512.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[9], 576.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[10], 640.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[11], 704.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[12], 768.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[13], 832.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[14], 896.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
-    // R_CreateQuad(&tiles[15], 960.0f, 0.0f, 64.0f, 0.5f, 0.0f, 0.0f, 1.0f, 2.0f);
 
-    VB_AddToBatch(&batch_renderer.vb, sizeof(testlevel_data), testlevel_data);
+    load_level_data(level_data);
 
-    load_textures(&batch_renderer.shader, &player_renderer.shader);
+    VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[0]), level_data[0]);
+
+    load_textures(&batch_renderer->shader, &player_renderer->shader);
    
     // glfwSetWindowUserPointer(glfwwindow, &game.inputs);
 
@@ -142,26 +102,64 @@ int main(void){
             fpsCount = 0;
         }
 
+        switch (game->scene)
+        {
+        case 0:
+            // Run fixed timestep updates
+            while (accumulator >= PHYSICS_TIME_STEP) {
+                //updatePhysics(PHYSICS_TIME_STEP);  // Update physics at fixed rate
 
-        // Run fixed timestep updates
-        while (accumulator >= PHYSICS_TIME_STEP) {
-            //updatePhysics(PHYSICS_TIME_STEP);  // Update physics at fixed rate
+                
+                process_physics(P1);
+                process_collisions(P1, level_data[0]);
+                update_player_coords(P1);
+                accumulator -= PHYSICS_TIME_STEP;
+            }
+            process_inputs(P1, &game->inputs);
+        
+        
+            R_Draw(&batch_renderer->va, &batch_renderer->ib, &batch_renderer->shader);
+            Draw_Player(player_renderer, P1);
 
-            process_inputs(&P1, &game.inputs);
-            process_physics(&P1);
-            process_collisions(&P1, testlevel_data);
-            update_player_coords(&P1);
-            accumulator -= PHYSICS_TIME_STEP;
+            if(game->inputs.F12Toggle == true){
+                NK_Draw(glfwwindow, nkwindow, P1);
+            }
+            break;
+        case 1:
+            // Run fixed timestep updates
+            while (accumulator >= PHYSICS_TIME_STEP) {
+                //updatePhysics(PHYSICS_TIME_STEP);  // Update physics at fixed rate
+
+                
+                process_physics(P1);
+                process_collisions(P1, level_data[1]);
+                update_player_coords(P1);
+                accumulator -= PHYSICS_TIME_STEP;
+            }
+            process_inputs(P1, &game->inputs);
+        
+        
+            R_Draw(&batch_renderer->va, &batch_renderer->ib, &batch_renderer->shader);
+            Draw_Player(player_renderer, P1);
+
+            if(game->inputs.F12Toggle == true){
+                NK_Draw(glfwwindow, nkwindow, P1);
+            }
+            break;
+        
+        default:
+            break;
         }
 
-     
-    
-        R_Draw(&batch_renderer.va, &batch_renderer.ib, &batch_renderer.shader);
-        Draw_Player(&player_renderer, &P1);
-
-        if(game.inputs.F12Toggle == true){
-            NK_Draw(glfwwindow, nkwindow, &P1);
+        if (game->inputs.F1State > GLFW_RELEASE){
+            VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[0]), level_data[0]);
+            game->scene = 0;
+        } else if (game->inputs.F2State > GLFW_RELEASE){
+            VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[1]), level_data[1]);
+            game->scene = 1;
         }
+        
+
 
         /* Swap front and back buffers */
         glfwSwapBuffers(glfwwindow);
@@ -173,16 +171,19 @@ int main(void){
 
     }
 
-    SH_Destruct(&batch_renderer.shader);
-    IB_Destruct(&batch_renderer.ib);
-    VB_Destruct(&batch_renderer.vb);
-    VA_Destruct(&batch_renderer.va);
+    SH_Destruct(&batch_renderer->shader);
+    IB_Destruct(&batch_renderer->ib);
+    VB_Destruct(&batch_renderer->vb);
+    VA_Destruct(&batch_renderer->va);
     // TX_Destruct(&Wtexture);
     // TX_Destruct(&Ctexture);
     // TX_Destruct(&blocktex);
 
     NK_Destruct(nkwindow);
-
+    free(game);
+    free(batch_renderer);
+    free(player_renderer);
+    free(P1);
 
     glfwTerminate();
     return 0;

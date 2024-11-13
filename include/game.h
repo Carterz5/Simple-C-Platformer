@@ -31,7 +31,10 @@ typedef struct Inputs {
     int RightState;
     int SpaceState;
     int F12State;
+    int LastF12State;
     int F12Toggle;
+    int F1State;
+    int F2State;
 } Inputs;
 
 typedef struct Game {
@@ -48,10 +51,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void process_inputs(Player* player, Inputs* inputs);
 void process_physics(Player* player);
 void update_player_coords(Player* player);
-void init_player(Player* player, float acceleration, float maxspeed, float maxfall, float size, float jump_height, float gravity, float friction, float textureID);
-void init_game(Game* game);
+Player* init_player(float acceleration, float maxspeed, float maxfall, float size, float jump_height, float gravity, float friction, float textureID);
+Game* init_game();
 bool check_collision(Player* player, Quad* box);
 void process_collisions(Player* player, Quad tiles[16][12]);
 void generate_level_data(Quad stage_data[16][12], float stage_array[192]);
+void load_level_data(Quad level_data[4][16][12]);
+
+
 
 #endif

@@ -52,7 +52,9 @@ GLFWwindow* init_opengl(Game* game){
 
 
 
-void Create_Batch_Renderer(Renderer* renderer, char* shaderpath, unsigned int max_vertices){
+Renderer* Create_Batch_Renderer(char* shaderpath, unsigned int max_vertices){
+    Renderer* renderer = malloc(sizeof(Renderer));
+    
     unsigned int ibcount = (max_vertices/4)*6;
 
     unsigned int* IBarray = NULL;
@@ -84,13 +86,14 @@ void Create_Batch_Renderer(Renderer* renderer, char* shaderpath, unsigned int ma
 
     SH_SetUniformMat4f(&renderer->shader, "u_MVP", renderer->mvp);
 
-
+    return renderer;
 
 
 
 }
 
-void Create_Player_Renderer(Renderer* renderer, char* shaderpath){
+Renderer* Create_Player_Renderer(char* shaderpath){
+    Renderer* renderer = malloc(sizeof(Renderer));
 
     unsigned int* IBarray = NULL;
     IBarray = IB_Populate_Dynamic(6, IBarray);
@@ -120,6 +123,8 @@ void Create_Player_Renderer(Renderer* renderer, char* shaderpath){
     glm_mat4_mul(temp, renderer->model, renderer->mvp);
 
     SH_SetUniformMat4f(&renderer->shader, "u_MVP", renderer->mvp);
+
+    return renderer;
 
 }
 
