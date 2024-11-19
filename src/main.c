@@ -21,11 +21,20 @@
 
 
 
-// 
+// ----TODO----
 // add sound
 // fix bouncy bug
-//
-//
+// win block
+// options
+// lose screen
+// sound
+// ---ART---
+//add more spike textures.
+//get rid of placeholder art
+
+//---DONE---
+//kill block
+//main menu
 
 
 int main(void){
@@ -40,9 +49,13 @@ int main(void){
     Renderer* batch_renderer = Create_Batch_Renderer("../shaders/Batch.glsl", 1000);
 
 
-    Player* P1 = init_player(2.5f, 10.0f, 10.0f, 32.0f, 15.0f, 2.0f, 2.0f, 1.0f);
+    Player* P1 = init_player(2.5f, 10.0f, 10.0f, 32.0f, 15.0f, 2.0f, 2.0f, (float)TEXTURE_PLAYER);
 
     VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
+
+    Quad main_menu;
+    R_CreateQuad(&main_menu, 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
+    VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &main_menu);
 
 
     Quad level_data[4][16][12];
@@ -65,7 +78,7 @@ int main(void){
     const int FPS_SAMPLES = 100;
     double fpsSum = 0.0;
     int fpsCount = 0;
-
+    int level_flag = 0;
     const double PHYSICS_TIME_STEP = 1.0 / 60.0;
     double previousTime = glfwGetTime();
     double accumulator = 0.0;
@@ -104,14 +117,12 @@ int main(void){
 
         switch (game->scene)
         {
-        case 0:
-            // Run fixed timestep updates
-            while (accumulator >= PHYSICS_TIME_STEP) {
-                //updatePhysics(PHYSICS_TIME_STEP);  // Update physics at fixed rate
+        case LEVEL_TEST:
 
-                
+            while (accumulator >= PHYSICS_TIME_STEP) {
+
                 process_physics(P1);
-                process_collisions(P1, level_data[0]);
+                level_flag = process_collisions(P1, level_data[0]);
                 update_player_coords(P1);
                 accumulator -= PHYSICS_TIME_STEP;
             }
@@ -125,14 +136,12 @@ int main(void){
                 NK_Draw(glfwwindow, nkwindow, P1);
             }
             break;
-        case 1:
-            // Run fixed timestep updates
-            while (accumulator >= PHYSICS_TIME_STEP) {
-                //updatePhysics(PHYSICS_TIME_STEP);  // Update physics at fixed rate
+        case LEVEL_ONE:
 
+            while (accumulator >= PHYSICS_TIME_STEP) {
                 
                 process_physics(P1);
-                process_collisions(P1, level_data[1]);
+                level_flag = process_collisions(P1, level_data[1]);
                 update_player_coords(P1);
                 accumulator -= PHYSICS_TIME_STEP;
             }
@@ -141,6 +150,16 @@ int main(void){
         
             R_Draw(&batch_renderer->va, &batch_renderer->ib, &batch_renderer->shader);
             Draw_Player(player_renderer, P1);
+
+            if(game->inputs.F12Toggle == true){
+                NK_Draw(glfwwindow, nkwindow, P1);
+            }
+            break;
+        case MAIN_MENU:
+
+            process_inputs(P1, &game->inputs);
+               
+            R_Draw(&player_renderer->va, &player_renderer->ib, &player_renderer->shader);
 
             if(game->inputs.F12Toggle == true){
                 NK_Draw(glfwwindow, nkwindow, P1);
@@ -150,13 +169,38 @@ int main(void){
         default:
             break;
         }
+        if (level_flag == 1){
+            switch (game->scene) {
+            case LEVEL_TEST:
+                VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[1]), level_data[1]);
+                VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
+                P1->Xstart = 65.0f;
+                P1->Ystart = 65.0f;
+                respawn_player(P1);
+                game->scene = LEVEL_ONE;
+                break;
+            
+            default:
+                break;
+            }
+
+
+        }
 
         if (game->inputs.F1State > GLFW_RELEASE){
             VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[0]), level_data[0]);
-            game->scene = 0;
-        } else if (game->inputs.F2State > GLFW_RELEASE){
+            VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
+            P1->Xstart = 512.0f;
+            P1->Ystart = 500.0f;
+            respawn_player(P1);            
+            game->scene = LEVEL_TEST;
+        } else if (game->inputs.F2State > GLFW_RELEASE || game->inputs.EnterState > GLFW_RELEASE){
             VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[1]), level_data[1]);
-            game->scene = 1;
+            VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
+            P1->Xstart = 65.0f;
+            P1->Ystart = 65.0f;
+            respawn_player(P1);
+            game->scene = LEVEL_ONE;
         }
         
 

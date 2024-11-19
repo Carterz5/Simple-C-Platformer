@@ -40,7 +40,7 @@ typedef struct Quad {
 
 void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);
-void R_CreateQuad(Quad* quad, float x, float y, float size, float r, float g, float b, float a, float textureID);
+void R_CreateQuad(Quad* quad, float x, float y, float xsize, float ysize, float r, float g, float b, float a, float textureID);
 
 void R_Draw(VertexArray* va, IndexBuffer* ib, Shader* shader);
 void R_Clear();

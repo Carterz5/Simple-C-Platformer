@@ -20,7 +20,7 @@ bool GLLogCall(const char* function, const char* file, int line){
     return true;
 }
 
-void R_CreateQuad(Quad* quad, float x, float y, float size, float r, float g, float b, float a, float textureID){
+void R_CreateQuad(Quad* quad, float x, float y, float xsize, float ysize, float r, float g, float b, float a, float textureID){
 
     quad->v0.Position[0] = x;
     quad->v0.Position[1] = y;
@@ -33,7 +33,7 @@ void R_CreateQuad(Quad* quad, float x, float y, float size, float r, float g, fl
     quad->v0.TexCoords[1] = 0.0f;
     quad->v0.TexID = textureID;
 
-    quad->v1.Position[0] = x + size;
+    quad->v1.Position[0] = x + xsize;
     quad->v1.Position[1] = y;
     quad->v1.Position[2] = 0.0f;
     quad->v1.Color[0] = r;
@@ -44,8 +44,8 @@ void R_CreateQuad(Quad* quad, float x, float y, float size, float r, float g, fl
     quad->v1.TexCoords[1] = 0.0f;
     quad->v1.TexID = textureID;
 
-    quad->v2.Position[0] = x + size;
-    quad->v2.Position[1] = y + size;
+    quad->v2.Position[0] = x + xsize;
+    quad->v2.Position[1] = y + ysize;
     quad->v2.Position[2] = 0.0f;
     quad->v2.Color[0] = r;
     quad->v2.Color[1] = g;
@@ -56,7 +56,7 @@ void R_CreateQuad(Quad* quad, float x, float y, float size, float r, float g, fl
     quad->v2.TexID = textureID;
 
     quad->v3.Position[0] = x;
-    quad->v3.Position[1] = y + size;
+    quad->v3.Position[1] = y + ysize;
     quad->v3.Position[2] = 0.0f;
     quad->v3.Color[0] = r;
     quad->v3.Color[1] = g;

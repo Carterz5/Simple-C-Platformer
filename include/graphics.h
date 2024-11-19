@@ -11,6 +11,20 @@
 typedef struct Player Player;
 typedef struct Game Game;
 
+enum TextureType {
+    TEXTURE_NONE = 0,
+    TEXTURE_PLAYER = 1,
+    TEXTURE_SPIKEUP = 2,
+    TEXTURE_SPIKEDOWN = 3,
+    TEXTURE_SPIKELEFT = 4,
+    TEXTURE_SPIKERIGHT = 5,
+    TEXTURE_GRASS = 10,
+    TEXTURE_FLAG = 19,
+    TEXTURE_MAINMENU = 20
+
+
+};
+
 typedef struct Renderer{
     VertexArray va;
     VertexBuffer vb;

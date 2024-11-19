@@ -168,15 +168,24 @@ void Draw_Player(Renderer* renderer, Player* player){
 void load_textures(Shader* batchshader, Shader* playershader){
 
     Texture player;
-    Texture blocktex;
-    TX_Construct("../assets/textures/testtile.png", &blocktex);
+    Texture grassblock;
+    Texture spike;
+    Texture MainMenu;
+    Texture Flag;
+    TX_Construct("../assets/textures/testtile.png", &grassblock);
     TX_Construct("../assets/textures/spring boy.png", &player);
+    TX_Construct("../assets/textures/Spikes.png", &spike);
+    TX_Construct("../assets/textures/StartScreen.png", &MainMenu);
+    TX_Construct("../assets/textures/flag.png", &Flag);
     TX_Bind(1, &player);
-    TX_Bind(2, &blocktex);
-    //int samplers[32] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
-    int samplers[4] = {0, 1, 2, 3};
-    SH_SetUniform1iv(batchshader, "u_Textures", 4, samplers);
-    SH_SetUniform1iv(playershader, "u_Textures", 4, samplers);
+    TX_Bind(2, &spike);
+    TX_Bind(10, &grassblock);
+    TX_Bind(19, &Flag);
+    TX_Bind(20, &MainMenu);
+    int samplers[32] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
+    //int samplers[4] = {0, 1, 2, 3};
+    SH_SetUniform1iv(batchshader, "u_Textures", 32, samplers);
+    SH_SetUniform1iv(playershader, "u_Textures", 32, samplers);
 
 
 

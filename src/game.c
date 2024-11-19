@@ -25,6 +25,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     case GLFW_KEY_SPACE:
         callback_keys.SpaceState = action;
         break;
+    case GLFW_KEY_ENTER:
+        callback_keys.EnterState = action;
+        break;
     case GLFW_KEY_F12:
         callback_keys.F12State = action;
         break;
@@ -85,6 +88,8 @@ Player* init_player(float acceleration, float maxspeed, float maxfall, float siz
     player->acceleration = acceleration;
     player->Xpos = 512.0f;
     player->Ypos = 500.0f;
+    player->Xstart = 512.0f;
+    player->Ystart = 500.0f;
     player->size = size;
     player->Xvelocity = 0.0f;
     player->Yvelocity = 0.0f;
@@ -100,7 +105,7 @@ Player* init_player(float acceleration, float maxspeed, float maxfall, float siz
 
 
 
-    R_CreateQuad(&player->quad, 0.0f, 0.0f, player->size, 0.0f, 1.0f, 0.0f, 1.0f, textureID);
+    R_CreateQuad(&player->quad, 0.0f, 0.0f, player->size, player->size, 0.0f, 1.0f, 0.0f, 1.0f, textureID);
 
     return player;
 
@@ -108,7 +113,7 @@ Player* init_player(float acceleration, float maxspeed, float maxfall, float siz
 
 Game* init_game(){
     Game* game = malloc(sizeof(Game));
-    game->scene = 0;
+    game->scene = MAIN_MENU;
     game->inputs.DownState = 0;
     game->inputs.UpState = 0;
     game->inputs.RightState = 0;
@@ -162,7 +167,7 @@ void update_player_coords(Player* player){
 
 }
 
-void process_collisions(Player* player, Quad tiles[16][12]){
+int process_collisions(Player* player, Quad tiles[16][12]){
 
     float playerLeft = player->Xpos;
     float playerRight = player->Xpos + player->size;
@@ -171,7 +176,7 @@ void process_collisions(Player* player, Quad tiles[16][12]){
 
 
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
         Quad current_tile;
         switch (i){
         //bottom
@@ -208,6 +213,13 @@ void process_collisions(Player* player, Quad tiles[16][12]){
             }
             
             break;
+        //self
+        case 4:
+
+            current_tile = tiles[player->Xtile][player->Ytile];
+
+            
+            break;
         
         default:
             break;
@@ -218,11 +230,12 @@ void process_collisions(Player* player, Quad tiles[16][12]){
         float quadBottom = current_tile.v0.Position[1];
         float quadTop = current_tile.v2.Position[1];
 
+        // if(check_collision(player, &current_tile) == true && (int)current_tile.v0.TexID >= TEXTURE_SPIKEUP && (int)current_tile.v0.TexID <= TEXTURE_SPIKERIGHT){
 
+        //     respawn_player(player);
 
+        // }
 
-
-        
         if(check_collision(player, &current_tile) == true){
 
             // Calculate overlap distances in each direction
@@ -251,15 +264,19 @@ void process_collisions(Player* player, Quad tiles[16][12]){
                 player->Xvelocity = 0;                     // Stop horizontal movement
             }
 
-
-
+            if((int)current_tile.v0.TexID >= TEXTURE_SPIKEUP && (int)current_tile.v0.TexID <= TEXTURE_SPIKERIGHT){
+                respawn_player(player);
+            } else if ((int)current_tile.v0.TexID == TEXTURE_FLAG) {
+                return 1;
+            }
+            
 
         }
 
 
     }
     
-
+    return 0;
 
 }
 
@@ -285,6 +302,15 @@ bool check_collision(Player* player, Quad* box){
 }
 
 
+void respawn_player(Player* player){
+
+    player->Xpos = player->Xstart;
+    player->Ypos = player->Ystart;
+
+
+}
+
+
 // 16w x 12h = 192 tiles
 
 void generate_level_data(Quad stage_data[16][12], float stage_array[192]){
@@ -296,9 +322,9 @@ void generate_level_data(Quad stage_data[16][12], float stage_array[192]){
 
         for (int j = 0; j < 16; j++){
             if(stage_array[quadcount] == 0){
-                R_CreateQuad(&stage_data[j][i], -64.0f, -64.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+                R_CreateQuad(&stage_data[j][i], -64.0f, -64.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
             } else{
-                R_CreateQuad(&stage_data[j][i], j * 64.0f, i * 64.0f, 64.0f, 0.0f, 0.0f, 0.0f, 1.0f, stage_array[quadcount]);
+                R_CreateQuad(&stage_data[j][i], j * 64.0f, i * 64.0f, 64.0f, 64.0f, 0.0f, 0.0f, 0.0f, 1.0f, stage_array[quadcount]);
             }
             
             quadcount++;
@@ -326,30 +352,38 @@ void load_level_data(Quad level_data[4][16][12]){
     float testlevel_array[192] = {0.0f};
 
     for (int i = 0; i < 16; i++){
-        testlevel_array[i] = 2.0f;
+        testlevel_array[i] = (float)TEXTURE_GRASS;
     }
-    testlevel_array[16] = 2.0f;
-    testlevel_array[32] = 2.0f;
-    testlevel_array[48] = 2.0f;
-    testlevel_array[64] = 2.0f;
 
-    testlevel_array[31] = 2.0f;
-    testlevel_array[47] = 2.0f;
-    testlevel_array[63] = 2.0f;
-    testlevel_array[79] = 2.0f;
+    testlevel_array[10] = (float)TEXTURE_SPIKEUP;
 
 
-    testlevel_array[87] = 2.0f;
-    testlevel_array[88] = 2.0f;
-    testlevel_array[89] = 2.0f;
+    testlevel_array[16] = (float)TEXTURE_GRASS;
+    testlevel_array[32] = (float)TEXTURE_GRASS;
+    testlevel_array[48] = (float)TEXTURE_GRASS;
+    testlevel_array[64] = (float)TEXTURE_GRASS;
+
+    testlevel_array[30] = (float)TEXTURE_FLAG;
+
+    testlevel_array[31] = (float)TEXTURE_GRASS;
+    testlevel_array[47] = (float)TEXTURE_GRASS;
+    testlevel_array[63] = (float)TEXTURE_GRASS;
+    testlevel_array[79] = (float)TEXTURE_GRASS;
+
+
+    testlevel_array[87] = (float)TEXTURE_GRASS;
+    testlevel_array[88] = (float)TEXTURE_GRASS;
+    testlevel_array[89] = (float)TEXTURE_GRASS;
 
     generate_level_data(level_data[0],testlevel_array);
 
 
+    //Level one
+
     float level1_array[192] = {0.0f};
 
     for (int i = 0; i < 16; i++){
-        level1_array[i] = 2.0f;
+        level1_array[i] = (float)TEXTURE_GRASS;
     }
     generate_level_data(level_data[1],level1_array);
 

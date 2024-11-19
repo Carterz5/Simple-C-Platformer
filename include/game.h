@@ -5,7 +5,16 @@
 #include "graphics.h"
 
 
+enum Scene {
+    MAIN_MENU = 0,
+    LEVEL_ONE = 1,
+    LEVEL_TWO = 2,
+    LEVEL_THREE = 3,
+    LEVEL_FOUR = 4,
+    LEVEL_TEST = 10,
 
+
+};
 
 
 typedef struct Player {
@@ -13,6 +22,7 @@ typedef struct Player {
     float size;
     int Xtile, Ytile;
     float Xvelocity, Yvelocity;
+    float Xstart, Ystart;
     float acceleration;
     float jump_height;
     float friction;
@@ -30,6 +40,7 @@ typedef struct Inputs {
     int LeftState;
     int RightState;
     int SpaceState;
+    int EnterState;
     int F12State;
     int LastF12State;
     int F12Toggle;
@@ -54,7 +65,8 @@ void update_player_coords(Player* player);
 Player* init_player(float acceleration, float maxspeed, float maxfall, float size, float jump_height, float gravity, float friction, float textureID);
 Game* init_game();
 bool check_collision(Player* player, Quad* box);
-void process_collisions(Player* player, Quad tiles[16][12]);
+void respawn_player(Player* player);
+int process_collisions(Player* player, Quad tiles[16][12]);
 void generate_level_data(Quad stage_data[16][12], float stage_array[192]);
 void load_level_data(Quad level_data[4][16][12]);
 
