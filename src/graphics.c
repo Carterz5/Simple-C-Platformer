@@ -6,7 +6,6 @@
 
 
 
-
 GLFWwindow* init_opengl(Game* game){
 
     GLFWwindow* window;

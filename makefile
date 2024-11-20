@@ -2,7 +2,7 @@
 CC = gcc
 
 # Executable name
-TARGET = bin/a.out
+# TARGET = bin/a.out
 
 # Source and include directories
 SRC_DIR = src
@@ -19,15 +19,19 @@ OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
 # Detect the operating system
 ifeq ($(OS), Windows_NT)
     # Windows-specific settings
-    INCLUDES = -I$(INC_DIR)
-    
-    DYN_LIBS = 
+	TARGET = bin/Platformer.exe
+    INCLUDES = -I$(INC_DIR) -I$(INC_DIR)/vendor -I$(INC_DIR)/opengl -I/ucrt64/include/GL
 
-    STATIC_LIBS = -lglew32 -lglfw3 -lopengl32 -lgdi32 -lglu32
+    
+    DYN_LIBS = -lglew32
+
+    STATIC_LIBS = -lglfw3 -lopengl32 -lgdi32 -lglu32
+
 
     LDFLAGS = -L/ucrt64/lib -Wl,-Bdynamic $(DYN_LIBS) -Wl,-Bstatic $(STATIC_LIBS) -mwindows
 else
     # Linux-specific settings
+	TARGET = bin/Platformer.out
     INCLUDES = $(shell find $(INC_DIR) -type d | sed 's/^/-I/')
     LIBS = -lGLEW -lglfw -lGL -lGLU -lX11 -lm
     LDFLAGS = $(LIBS)
@@ -64,7 +68,7 @@ clean:
 
 # Run the program
 run: $(BIN_DIR)
-	cd $(BIN_DIR) && ./a.out
+	cd $(BIN_DIR) && ./Platformer.out
 
 # Rebuild the project
 rebuild: clean all
