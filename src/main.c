@@ -23,11 +23,10 @@
 
 // ----TODO----
 // add sound
-// fix bouncy bug
-// win block
 // options
 // lose screen
 // sound
+// add more levels
 // ---ART---
 //add more spike textures.
 //get rid of placeholder art
@@ -35,6 +34,8 @@
 //---DONE---
 //kill block
 //main menu
+//win block
+//fix bouncy bug
 
 
 int main(void){
