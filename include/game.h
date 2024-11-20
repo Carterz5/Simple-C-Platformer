@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "graphics.h"
+#include "audio.h"
 
 
 enum Scene {
@@ -59,7 +60,7 @@ typedef struct Game {
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-void process_inputs(Player* player, Inputs* inputs);
+void process_inputs(Player* player, Inputs* inputs, Sound sound_data[10]);
 void process_physics(Player* player);
 void update_player_coords(Player* player);
 Player* init_player(float acceleration, float maxspeed, float maxfall, float size, float jump_height, float gravity, float friction, float textureID);

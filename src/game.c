@@ -46,7 +46,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
-void process_inputs(Player* player, Inputs* inputs){
+void process_inputs(Player* player, Inputs* inputs, Sound sound_data[10]){
 
 
     static unsigned int jump_cooldown = 0;
@@ -70,6 +70,7 @@ void process_inputs(Player* player, Inputs* inputs){
         player->Yvelocity = player->jump_height;
         player->jumps--;
         jump_cooldown = 10;
+        play_sound(&sound_data[SOUND_TEST]);
     }
     
     if(jump_cooldown > 0){

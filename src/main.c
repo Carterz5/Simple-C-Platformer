@@ -18,6 +18,7 @@
 #include "graphics.h"
 #include "game.h"
 #include "menus.h"
+#include "audio.h"
 
 
 
@@ -50,7 +51,7 @@ int main(void){
     Renderer* batch_renderer = Create_Batch_Renderer("../shaders/Batch.glsl", 1000);
 
 
-    Player* P1 = init_player(2.5f, 10.0f, 10.0f, 32.0f, 15.0f, 2.0f, 2.0f, (float)TEXTURE_PLAYER);
+    Player* P1 = init_player(1.3f, 8.0f, 10.0f, 32.0f, 9.0f, 0.5f, 1.0f, (float)TEXTURE_PLAYER);
 
     VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
 
@@ -58,6 +59,8 @@ int main(void){
     R_CreateQuad(&main_menu, 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
     VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &main_menu);
 
+    Sound sound_data[10];
+    load_sounds(sound_data);
 
     Quad level_data[4][16][12];
 
@@ -121,13 +124,13 @@ int main(void){
         case LEVEL_TEST:
 
             while (accumulator >= PHYSICS_TIME_STEP) {
-
+                process_inputs(P1, &game->inputs, sound_data);
                 process_physics(P1);
                 level_flag = process_collisions(P1, level_data[0]);
                 update_player_coords(P1);
                 accumulator -= PHYSICS_TIME_STEP;
             }
-            process_inputs(P1, &game->inputs);
+            
         
         
             R_Draw(&batch_renderer->va, &batch_renderer->ib, &batch_renderer->shader);
@@ -140,13 +143,13 @@ int main(void){
         case LEVEL_ONE:
 
             while (accumulator >= PHYSICS_TIME_STEP) {
-                
+                process_inputs(P1, &game->inputs, sound_data);
                 process_physics(P1);
                 level_flag = process_collisions(P1, level_data[1]);
                 update_player_coords(P1);
                 accumulator -= PHYSICS_TIME_STEP;
             }
-            process_inputs(P1, &game->inputs);
+            
         
         
             R_Draw(&batch_renderer->va, &batch_renderer->ib, &batch_renderer->shader);
@@ -158,7 +161,7 @@ int main(void){
             break;
         case MAIN_MENU:
 
-            process_inputs(P1, &game->inputs);
+            process_inputs(P1, &game->inputs,sound_data);
                
             R_Draw(&player_renderer->va, &player_renderer->ib, &player_renderer->shader);
 

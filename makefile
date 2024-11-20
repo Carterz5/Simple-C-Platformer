@@ -23,7 +23,7 @@ ifeq ($(OS), Windows_NT)
     INCLUDES = -I$(INC_DIR) -I$(INC_DIR)/vendor -I$(INC_DIR)/opengl -I/ucrt64/include/GL
 
     
-    DYN_LIBS = -lglew32
+    DYN_LIBS = -lglew32 -lopenal -lalut
 
     STATIC_LIBS = -lglfw3 -lopengl32 -lgdi32 -lglu32
 
@@ -33,7 +33,7 @@ else
     # Linux-specific settings
 	TARGET = bin/Platformer.out
     INCLUDES = $(shell find $(INC_DIR) -type d | sed 's/^/-I/')
-    LIBS = -lGLEW -lglfw -lGL -lGLU -lX11 -lm
+    LIBS = -lGLEW -lglfw -lGL -lGLU -lX11 -lm -lopenal -lalut
     LDFLAGS = $(LIBS)
 endif
 
