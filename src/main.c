@@ -59,6 +59,8 @@ int main(void){
     R_CreateQuad(&main_menu, 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
     VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &main_menu);
 
+    
+    alutInit(0,0);
     Sound sound_data[10];
     load_sounds(sound_data);
 
