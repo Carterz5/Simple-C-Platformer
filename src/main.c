@@ -23,11 +23,11 @@
 
 
 // ----TODO----
-// add sound
-// options
-// lose screen
-// sound
-// add more levels
+//win screen
+//add more levels
+//moving blade
+//music
+//sound effects
 // ---ART---
 //add more spike textures.
 //get rid of placeholder art
@@ -37,6 +37,10 @@
 //main menu
 //win block
 //fix bouncy bug
+//sound
+//options
+//switch scene function
+//compile for windows
 
 
 int main(void){
@@ -88,9 +92,12 @@ int main(void){
     const double PHYSICS_TIME_STEP = 1.0 / 60.0;
     double previousTime = glfwGetTime();
     double accumulator = 0.0;
+    int window_width, window_height;
     /* Loop until the user closes the window */
     glClearColor(nkwindow->bg.r, nkwindow->bg.g, nkwindow->bg.b, nkwindow->bg.a);
     while (!glfwWindowShouldClose(glfwwindow)){
+        glfwGetWindowSize(glfwwindow, &window_width, &window_height);
+        glViewport(0, 0, window_width, window_height);
         /* Render here */
 
         double currentTime = glfwGetTime();
@@ -121,69 +128,46 @@ int main(void){
             fpsCount = 0;
         }
 
-        switch (game->scene)
-        {
-        case LEVEL_TEST:
+        if (game->scene != MAIN_MENU){
 
             while (accumulator >= PHYSICS_TIME_STEP) {
                 process_inputs(P1, &game->inputs, sound_data);
                 process_physics(P1);
-                level_flag = process_collisions(P1, level_data[0]);
+                level_flag = process_collisions(P1, level_data[game->scene]);
                 update_player_coords(P1);
                 accumulator -= PHYSICS_TIME_STEP;
             }
             
-        
-        
             R_Draw(&batch_renderer->va, &batch_renderer->ib, &batch_renderer->shader);
             Draw_Player(player_renderer, P1);
 
-            if(game->inputs.F12Toggle == true){
-                NK_Draw(glfwwindow, nkwindow, P1);
-            }
-            break;
-        case LEVEL_ONE:
-
-            while (accumulator >= PHYSICS_TIME_STEP) {
-                process_inputs(P1, &game->inputs, sound_data);
-                process_physics(P1);
-                level_flag = process_collisions(P1, level_data[1]);
-                update_player_coords(P1);
-                accumulator -= PHYSICS_TIME_STEP;
-            }
-            
-        
-        
-            R_Draw(&batch_renderer->va, &batch_renderer->ib, &batch_renderer->shader);
-            Draw_Player(player_renderer, P1);
-
-            if(game->inputs.F12Toggle == true){
-                NK_Draw(glfwwindow, nkwindow, P1);
-            }
-            break;
-        case MAIN_MENU:
-
-            process_inputs(P1, &game->inputs,sound_data);
-               
+        } else if (game->scene == MAIN_MENU) {
+            process_inputs(P1, &game->inputs,sound_data);               
             R_Draw(&player_renderer->va, &player_renderer->ib, &player_renderer->shader);
-
-            if(game->inputs.F12Toggle == true){
-                NK_Draw(glfwwindow, nkwindow, P1);
-            }
-            break;
-        
-        default:
-            break;
         }
+        
+
+        if(game->inputs.OToggle == true){
+            NK_Draw_Options(glfwwindow, nkwindow, sound_data);
+        }
+        if(game->inputs.F12Toggle == true){
+            NK_Draw_Debug(glfwwindow, nkwindow, P1);
+        }
+
+
         if (level_flag == 1){
             switch (game->scene) {
             case LEVEL_TEST:
-                VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[1]), level_data[1]);
-                VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
-                P1->Xstart = 65.0f;
-                P1->Ystart = 65.0f;
-                respawn_player(P1);
-                game->scene = LEVEL_ONE;
+                switch_scene(LEVEL_ONE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+                break;
+            case LEVEL_ONE:
+                switch_scene(LEVEL_TWO, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+                break;
+            case LEVEL_TWO:
+                switch_scene(LEVEL_THREE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+                break;
+            case LEVEL_THREE:
+                switch_scene(LEVEL_FOUR, game, P1, batch_renderer, player_renderer, sound_data, level_data);
                 break;
             
             default:
@@ -194,30 +178,22 @@ int main(void){
         }
 
         if (game->inputs.F1State > GLFW_RELEASE){
-            VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[0]), level_data[0]);
-            VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
-            P1->Xstart = 512.0f;
-            P1->Ystart = 500.0f;
-            respawn_player(P1);            
-            game->scene = LEVEL_TEST;
+            switch_scene(LEVEL_TEST, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+            
         } else if (game->inputs.F2State > GLFW_RELEASE || game->inputs.EnterState > GLFW_RELEASE){
-            VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[1]), level_data[1]);
-            VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
-            P1->Xstart = 65.0f;
-            P1->Ystart = 65.0f;
-            respawn_player(P1);
-            game->scene = LEVEL_ONE;
+            switch_scene(LEVEL_ONE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+
         }
         
-
+        
 
         /* Swap front and back buffers */
         glfwSwapBuffers(glfwwindow);
         R_Clear();
         glfwPollEvents();
 
-
-
+        
+        level_flag = 0;
 
     }
 

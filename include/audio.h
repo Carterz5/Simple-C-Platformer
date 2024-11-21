@@ -4,8 +4,8 @@
 
 enum SoundType {
 
-    SOUND_TEST = 0
-
+    SOUND_TEST = 0,
+    SOUND_MENU = 1
 
 };
 
@@ -20,7 +20,6 @@ typedef struct Sound {
 
 void load_sounds(Sound sounds[10]);
 void stop_sound(Sound* sound);
-void loop_sound(Sound* sound);
 void play_sound (Sound* sound);
 
 #endif

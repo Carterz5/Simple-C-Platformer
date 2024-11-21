@@ -1,6 +1,7 @@
 #ifndef MENUS_H
 #define MENUS_H
 #include "graphics.h"
+#include "audio.h"
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
 #define NK_INCLUDE_STANDARD_VARARGS
@@ -24,7 +25,8 @@ typedef struct Nuklear_window {
 
 Nuklear_window* NK_init(GLFWwindow* glfwwindow);
 void NK_Destruct(Nuklear_window* nkwindow);
-void NK_Draw(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player);
+void NK_Draw_Debug(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player);
+void NK_Draw_Options(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Sound sound_data[10]);
 
 
 #endif

@@ -140,8 +140,8 @@ void Draw_Player(Renderer* renderer, Player* player){
     if(player->Ypos > 736.0f){
         player->Ypos = 736.0f;
     }
-    if(player->Ypos < 0.0f){
-        player->Ypos = 0.0f;
+    if(player->Ypos < -128.0f){
+        respawn_player(player);
     }
 
     vec3 modeltranslation = {player->Xpos, player->Ypos, 0.0f};

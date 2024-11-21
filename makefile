@@ -27,7 +27,7 @@ ifeq ($(OS), Windows_NT)
 
     STATIC_LIBS = -lglfw3 -lopengl32 -lgdi32 -lglu32
 
-
+	RUN_CMD = cd $(BIN_DIR) && ./Platformer.exe
     LDFLAGS = -L/ucrt64/lib -Wl,-Bdynamic $(DYN_LIBS) -Wl,-Bstatic $(STATIC_LIBS) -mwindows
 else
     # Linux-specific settings
@@ -35,6 +35,7 @@ else
     INCLUDES = $(shell find $(INC_DIR) -type d | sed 's/^/-I/')
     LIBS = -lGLEW -lglfw -lGL -lGLU -lX11 -lm -lopenal -lalut
     LDFLAGS = $(LIBS)
+	RUN_CMD = cd $(BIN_DIR) && ./Platformer.out
 endif
 
 # Compiler flags
@@ -68,7 +69,7 @@ clean:
 
 # Run the program
 run: $(BIN_DIR)
-	cd $(BIN_DIR) && ./Platformer.out
+	$(RUN_CMD)
 
 # Rebuild the project
 rebuild: clean all

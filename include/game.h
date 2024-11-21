@@ -7,12 +7,12 @@
 
 
 enum Scene {
-    MAIN_MENU = 0,
+    MAIN_MENU = 10,
     LEVEL_ONE = 1,
     LEVEL_TWO = 2,
     LEVEL_THREE = 3,
     LEVEL_FOUR = 4,
-    LEVEL_TEST = 10,
+    LEVEL_TEST = 0,
 
 
 };
@@ -42,9 +42,8 @@ typedef struct Inputs {
     int RightState;
     int SpaceState;
     int EnterState;
-    int F12State;
-    int LastF12State;
-    int F12Toggle;
+    int OState, LastOState, OToggle;
+    int F12State, LastF12State, F12Toggle;
     int F1State;
     int F2State;
 } Inputs;
@@ -70,6 +69,7 @@ void respawn_player(Player* player);
 int process_collisions(Player* player, Quad tiles[16][12]);
 void generate_level_data(Quad stage_data[16][12], float stage_array[192]);
 void load_level_data(Quad level_data[4][16][12]);
+void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, Renderer* player_renderer, Sound sound_data[10], Quad level_data[4][16][12]);
 
 
 

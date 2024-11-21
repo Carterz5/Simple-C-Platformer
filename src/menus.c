@@ -44,7 +44,7 @@ void NK_Destruct(Nuklear_window* nkwindow){
 }
 
 
-void NK_Draw(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player){
+void NK_Draw_Debug(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player){
 
     nk_glfw3_new_frame(&nkwindow->glfw);
 
@@ -120,5 +120,52 @@ void NK_Draw(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player){
 
     GLCall(glEnable(GL_BLEND));
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+}
+
+void NK_Draw_Options(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Sound sound_data[10]){
+
+    static float music_volume = 0.5f;
+    static float effects_volume = 0.5f;
+
+    nk_glfw3_new_frame(&nkwindow->glfw);
+
+    if (nk_begin(nkwindow->ctx, "Options", nk_rect(50, 50, 230, 300),
+        NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|
+        NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE)) {
+
+        nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
+        nk_property_float(nkwindow->ctx, "Music Volume", 0.0f, &music_volume, 1.0f, 0.0f, 0.01f);
+
+        nk_layout_row_dynamic(nkwindow->ctx, 30, 1);
+        nk_property_float(nkwindow->ctx, "Effects Volume", 0.0f, &effects_volume, 1.0f, 0.0f, 0.01f);
+    }
+    nk_end(nkwindow->ctx);
+    glClearColor(nkwindow->bg.r, nkwindow->bg.g, nkwindow->bg.b, nkwindow->bg.a);
+
+
+
+    glfwGetWindowSize(glfwwindow, &nkwindow->width, &nkwindow->height);
+    glViewport(0, 0, nkwindow->width, nkwindow->height);
+    /* IMPORTANT: `nk_glfw_render` modifies some global OpenGL state
+        * with blending, scissor, face culling, depth test and viewport and
+        * defaults everything back into a default state.
+        * Make sure to either a.) save and restore or b.) reset your own state after
+        * rendering the UI. */
+    nk_glfw3_render(&nkwindow->glfw, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
+
+    GLCall(glEnable(GL_BLEND));
+    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+
+    for (int i = 0; i < 5; i++){
+        
+        alSourcef(sound_data[i].source, AL_GAIN, music_volume);
+
+    }
+    
+
+
+
 
 }

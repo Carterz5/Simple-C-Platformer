@@ -25,6 +25,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     case GLFW_KEY_SPACE:
         callback_keys.SpaceState = action;
         break;
+    case GLFW_KEY_O:
+        callback_keys.OState = action;
+        break;
     case GLFW_KEY_ENTER:
         callback_keys.EnterState = action;
         break;
@@ -58,6 +61,12 @@ void process_inputs(Player* player, Inputs* inputs, Sound sound_data[10]){
         callback_keys.F12Toggle = false;
     }
 
+    if(callback_keys.OState == GLFW_RELEASE && callback_keys.LastOState == GLFW_PRESS && callback_keys.OToggle == false){
+        callback_keys.OToggle = true;
+    } else if (callback_keys.OState == GLFW_RELEASE && callback_keys.LastOState == GLFW_PRESS && callback_keys.OToggle == true){
+        callback_keys.OToggle = false;
+    }
+
 
 
     if (callback_keys.RightState > GLFW_RELEASE){
@@ -79,6 +88,7 @@ void process_inputs(Player* player, Inputs* inputs, Sound sound_data[10]){
 
 
     callback_keys.LastF12State = callback_keys.F12State;
+    callback_keys.LastOState = callback_keys.OState;
 
     *inputs = callback_keys;
 }
@@ -302,9 +312,48 @@ bool check_collision(Player* player, Quad* box){
 
 }
 
+void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, Renderer* player_renderer, Sound sound_data[10], Quad level_data[4][16][12]){
+
+    switch (scene){
+    case LEVEL_TEST:
+        VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[0]), level_data[0]);
+        VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
+        P1->Xstart = 512.0f;
+        P1->Ystart = 468.0f;
+        respawn_player(P1);
+        play_sound(&sound_data[SOUND_MENU]);    
+        game->scene = LEVEL_TEST;
+        break;
+    case LEVEL_ONE:
+        VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[1]), level_data[1]);
+        VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
+        P1->Xstart = 1.0f;
+        P1->Ystart = 65.0f;
+        respawn_player(P1);
+        game->scene = LEVEL_ONE;
+        stop_sound(&sound_data[SOUND_MENU]);
+        break;
+    case LEVEL_TWO:
+        VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[2]), level_data[2]);
+        VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
+        P1->Xstart = 1.0f;
+        P1->Ystart = 65.0f;
+        respawn_player(P1);
+        game->scene = LEVEL_TWO;
+
+        break;
+    
+    default:
+        break;
+    }
+
+
+
+}
 
 void respawn_player(Player* player){
-
+    player->Xvelocity = 0.0f;
+    player->Yvelocity = 0.0f;
     player->Xpos = player->Xstart;
     player->Ypos = player->Ystart;
 
@@ -356,6 +405,7 @@ void load_level_data(Quad level_data[4][16][12]){
         testlevel_array[i] = (float)TEXTURE_GRASS;
     }
 
+    testlevel_array[8] = (float)TEXTURE_NONE;
     testlevel_array[10] = (float)TEXTURE_SPIKEUP;
 
 
@@ -383,9 +433,68 @@ void load_level_data(Quad level_data[4][16][12]){
 
     float level1_array[192] = {0.0f};
 
-    for (int i = 0; i < 16; i++){
+    for (int i = 0; i < 9; i++){
         level1_array[i] = (float)TEXTURE_GRASS;
     }
+    for (int i = 1; i < 11; i++){
+        level1_array[(i*16)+3] = (float)TEXTURE_GRASS;
+    }
+    for (int i = 3; i < 12; i++){
+        level1_array[(i*16)+6] = (float)TEXTURE_GRASS;
+    }
+    for (int i = 3; i < 12; i++){
+        level1_array[(i*16)+10] = (float)TEXTURE_GRASS;
+    }
+    for (int i = 3; i < 12; i++){
+        level1_array[(i*16)+11] = (float)TEXTURE_GRASS;
+    }
+    
+    level1_array[4] = (float)TEXTURE_SPIKEUP;
+    level1_array[5] = (float)TEXTURE_SPIKEUP;
+
+    // right stairs
+    level1_array[18] = (float)TEXTURE_GRASS;
+    level1_array[50] = (float)TEXTURE_GRASS;
+    level1_array[82] = (float)TEXTURE_GRASS;
+    level1_array[114] = (float)TEXTURE_GRASS;
+    level1_array[146] = (float)TEXTURE_GRASS;
+  
+
+
+    //left stairs
+    level1_array[32] = (float)TEXTURE_GRASS;
+    level1_array[64] = (float)TEXTURE_GRASS;
+    level1_array[96] = (float)TEXTURE_GRASS;
+    level1_array[128] = (float)TEXTURE_GRASS;
+    level1_array[160] = (float)TEXTURE_GRASS;
+
+
+    // deathfall landing
+
+    level1_array[22] = (float)TEXTURE_GRASS;
+    level1_array[23] = (float)TEXTURE_GRASS;
+    level1_array[24] = (float)TEXTURE_GRASS;
+    
+    // final jump landing
+    level1_array[28] = (float)TEXTURE_GRASS;
+    level1_array[29] = (float)TEXTURE_GRASS;
+    level1_array[30] = (float)TEXTURE_GRASS;
+    level1_array[31] = (float)TEXTURE_GRASS;
+
+    //win flag
+    level1_array[47] = (float)TEXTURE_FLAG;
+
     generate_level_data(level_data[1],level1_array);
+
+
+    // level two
+
+    float level2_array[192] = {0.0f};
+
+        for (int i = 0; i < 16; i++){
+        level2_array[i] = (float)TEXTURE_GRASS;
+    }
+
+    generate_level_data(level_data[2], level2_array);
 
 }
