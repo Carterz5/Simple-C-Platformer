@@ -127,6 +127,46 @@ Renderer* Create_Player_Renderer(char* shaderpath){
 
 }
 
+void load_backgrounds(Quad backgrounds[5]){
+
+    R_CreateQuad(&backgrounds[0], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
+    R_CreateQuad(&backgrounds[1], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_LEVELONE);
+    R_CreateQuad(&backgrounds[2], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
+    R_CreateQuad(&backgrounds[3], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
+    R_CreateQuad(&backgrounds[4], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
+    R_CreateQuad(&backgrounds[5], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
+
+
+
+
+}
+
+void Draw_Background(Renderer* renderer, Game* game, Quad backgrounds[5]){
+
+    switch (game->scene){
+    case SCENE_MAIN_MENU:
+        VB_AddToDynamic(&renderer->vb, sizeof(Quad), &backgrounds[0]);
+        break;
+    case SCENE_LEVEL_ONE:
+        VB_AddToDynamic(&renderer->vb, sizeof(Quad), &backgrounds[1]);
+        break;
+    case SCENE_LEVEL_TWO:
+        VB_AddToDynamic(&renderer->vb, sizeof(Quad), &backgrounds[2]);
+        break;
+    case SCENE_LEVEL_THREE:
+        VB_AddToDynamic(&renderer->vb, sizeof(Quad), &backgrounds[3]);
+        break;
+    case SCENE_WIN:
+        VB_AddToDynamic(&renderer->vb, sizeof(Quad), &backgrounds[4]);
+        break;
+    
+    default:
+        break;
+    }
+
+    R_Draw(&renderer->va, &renderer->ib, &renderer->shader);
+
+}
 
 void Draw_Player(Renderer* renderer, Player* player){
 
@@ -164,27 +204,44 @@ void Draw_Player(Renderer* renderer, Player* player){
 
 
 
-void load_textures(Shader* batchshader, Shader* playershader){
+void load_textures(Shader* batchshader, Shader* playershader, Shader* backgroundshader){
 
     Texture player;
-    Texture grassblock;
-    Texture spike;
+    Texture grassblock, dirtblock;
+    Texture iceblock, snowblock;
+    Texture spikeup, spikedown, spikeleft, spikeright;
     Texture MainMenu;
+    Texture tree_background;
     Texture Flag;
-    TX_Construct("../assets/textures/testtile.png", &grassblock);
+    TX_Construct("../assets/textures/grass.png", &grassblock);
+    TX_Construct("../assets/textures/dirt.png", &dirtblock);
+    TX_Construct("../assets/textures/ice_block.png", &iceblock);
+    TX_Construct("../assets/textures/snow_block.png", &snowblock);
     TX_Construct("../assets/textures/spring boy.png", &player);
-    TX_Construct("../assets/textures/Spikes.png", &spike);
+    TX_Construct("../assets/textures/Spikes.png", &spikeup);
+    TX_Construct("../assets/textures/Spikes_down.png", &spikedown);
+    TX_Construct("../assets/textures/Spikes_left.png", &spikeleft);
+    TX_Construct("../assets/textures/Spikes_right.png", &spikeright);
     TX_Construct("../assets/textures/StartScreen.png", &MainMenu);
+    TX_Construct("../assets/textures/tree_background.png", &tree_background);
     TX_Construct("../assets/textures/flag.png", &Flag);
     TX_Bind(1, &player);
-    TX_Bind(2, &spike);
+    TX_Bind(2, &spikeup);
+    TX_Bind(3, &spikedown);
+    TX_Bind(4, &spikeleft);
+    TX_Bind(5, &spikeright);
     TX_Bind(10, &grassblock);
+    TX_Bind(11, &dirtblock);
+    TX_Bind(12, &iceblock);
+    TX_Bind(13, &snowblock);
     TX_Bind(19, &Flag);
     TX_Bind(20, &MainMenu);
+    TX_Bind(21, &tree_background);
     int samplers[32] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
     //int samplers[4] = {0, 1, 2, 3};
     SH_SetUniform1iv(batchshader, "u_Textures", 32, samplers);
     SH_SetUniform1iv(playershader, "u_Textures", 32, samplers);
+    SH_SetUniform1iv(backgroundshader, "u_Textures", 32, samplers);
 
 
 

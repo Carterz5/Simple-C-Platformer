@@ -19,8 +19,17 @@ enum TextureType {
     TEXTURE_SPIKELEFT = 4,
     TEXTURE_SPIKERIGHT = 5,
     TEXTURE_GRASS = 10,
+    TEXTURE_DIRT = 11,
+    TEXTURE_ICE = 12,
+    TEXTURE_SNOW = 13,
+    TEXTURE_SAND = 14,
+    TEXTURE_SANDSTONE = 15,
     TEXTURE_FLAG = 19,
-    TEXTURE_MAINMENU = 20
+    TEXTURE_MAINMENU = 20,
+    TEXTURE_LEVELONE = 21,
+    TEXTURE_LEVELTWO = 22,
+    TEXTURE_LEVELTHREE = 23,
+    TEXTURE_WIN = 24
 
 
 };
@@ -41,7 +50,9 @@ GLFWwindow* init_opengl(Game* game);
 Renderer* Create_Batch_Renderer(char* shaderpath, unsigned int max_vertices);
 Renderer* Create_Player_Renderer(char* shaderpath);
 void Draw_Player(Renderer* renderer, Player* player);
-void load_textures(Shader* batchshader, Shader* playershader);
+void load_textures(Shader* batchshader, Shader* playershader, Shader* backgroundshader);
+void Draw_Background(Renderer* renderer, Game* game, Quad backgrounds[5]);
+void load_backgrounds(Quad backgrounds[5]);
 
 
 #endif

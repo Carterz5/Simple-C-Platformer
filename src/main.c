@@ -51,17 +51,18 @@ int main(void){
     Nuklear_window* nkwindow = NK_init(glfwwindow);
 
 
-    Renderer* player_renderer = Create_Player_Renderer("../shaders/Batch.glsl");;
+    Renderer* player_renderer = Create_Player_Renderer("../shaders/Batch.glsl");
+    Renderer* background_renderer = Create_Player_Renderer("../shaders/Batch.glsl");
     Renderer* batch_renderer = Create_Batch_Renderer("../shaders/Batch.glsl", 1000);
 
 
-    Player* P1 = init_player(1.3f, 8.0f, 10.0f, 32.0f, 9.0f, 0.5f, 1.0f, (float)TEXTURE_PLAYER);
+    Player* P1 = init_player(1.3f, 8.0f, 10.0f, 32.0f, 9.0f, 0.5f, 0.95f, (float)TEXTURE_PLAYER);
 
     VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
 
-    Quad main_menu;
-    R_CreateQuad(&main_menu, 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
-    VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &main_menu);
+    Quad backgrounds[5];
+    load_backgrounds(backgrounds);
+
 
     
     alutInit(0,0);
@@ -75,9 +76,8 @@ int main(void){
 
     VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[0]), level_data[0]);
 
-    load_textures(&batch_renderer->shader, &player_renderer->shader);
+    load_textures(&batch_renderer->shader, &player_renderer->shader, &background_renderer->shader);
    
-    // glfwSetWindowUserPointer(glfwwindow, &game.inputs);
 
     VA_Unbind();
     SH_Unbind();
@@ -128,7 +128,7 @@ int main(void){
             fpsCount = 0;
         }
 
-        if (game->scene != MAIN_MENU){
+        if (game->scene != SCENE_MAIN_MENU){
 
             while (accumulator >= PHYSICS_TIME_STEP) {
                 process_inputs(P1, &game->inputs, sound_data);
@@ -137,13 +137,14 @@ int main(void){
                 update_player_coords(P1);
                 accumulator -= PHYSICS_TIME_STEP;
             }
-            
+            Draw_Background(background_renderer, game, backgrounds);
             R_Draw(&batch_renderer->va, &batch_renderer->ib, &batch_renderer->shader);
             Draw_Player(player_renderer, P1);
 
-        } else if (game->scene == MAIN_MENU) {
-            process_inputs(P1, &game->inputs,sound_data);               
-            R_Draw(&player_renderer->va, &player_renderer->ib, &player_renderer->shader);
+        } else if (game->scene == SCENE_MAIN_MENU) {
+            process_inputs(P1, &game->inputs,sound_data);
+            Draw_Background(background_renderer, game, backgrounds);           
+
         }
         
 
@@ -157,17 +158,17 @@ int main(void){
 
         if (level_flag == 1){
             switch (game->scene) {
-            case LEVEL_TEST:
-                switch_scene(LEVEL_ONE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+            case SCENE_LEVEL_TEST:
+                switch_scene(SCENE_LEVEL_ONE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
                 break;
-            case LEVEL_ONE:
-                switch_scene(LEVEL_TWO, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+            case SCENE_LEVEL_ONE:
+                switch_scene(SCENE_LEVEL_TWO, game, P1, batch_renderer, player_renderer, sound_data, level_data);
                 break;
-            case LEVEL_TWO:
-                switch_scene(LEVEL_THREE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+            case SCENE_LEVEL_TWO:
+                switch_scene(SCENE_LEVEL_THREE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
                 break;
-            case LEVEL_THREE:
-                switch_scene(LEVEL_FOUR, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+            case SCENE_LEVEL_THREE:
+                switch_scene(SCENE_LEVEL_FOUR, game, P1, batch_renderer, player_renderer, sound_data, level_data);
                 break;
             
             default:
@@ -178,10 +179,16 @@ int main(void){
         }
 
         if (game->inputs.F1State > GLFW_RELEASE){
-            switch_scene(LEVEL_TEST, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+            switch_scene(SCENE_LEVEL_TEST, game, P1, batch_renderer, player_renderer, sound_data, level_data);
             
         } else if (game->inputs.F2State > GLFW_RELEASE || game->inputs.EnterState > GLFW_RELEASE){
-            switch_scene(LEVEL_ONE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+            switch_scene(SCENE_LEVEL_ONE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+
+        } else if (game->inputs.F3State > GLFW_RELEASE || game->inputs.EnterState > GLFW_RELEASE){
+            switch_scene(SCENE_LEVEL_TWO, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+
+        } else if (game->inputs.F4State > GLFW_RELEASE || game->inputs.EnterState > GLFW_RELEASE){
+            switch_scene(SCENE_LEVEL_THREE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
 
         }
         

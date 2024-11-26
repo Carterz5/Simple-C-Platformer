@@ -7,12 +7,13 @@
 
 
 enum Scene {
-    MAIN_MENU = 10,
-    LEVEL_ONE = 1,
-    LEVEL_TWO = 2,
-    LEVEL_THREE = 3,
-    LEVEL_FOUR = 4,
-    LEVEL_TEST = 0,
+    SCENE_MAIN_MENU = 10,
+    SCENE_LEVEL_ONE = 1,
+    SCENE_LEVEL_TWO = 2,
+    SCENE_LEVEL_THREE = 3,
+    SCENE_LEVEL_FOUR = 4,
+    SCENE_LEVEL_TEST = 0,
+    SCENE_WIN = 11,
 
 
 };
@@ -46,6 +47,10 @@ typedef struct Inputs {
     int F12State, LastF12State, F12Toggle;
     int F1State;
     int F2State;
+    int F3State;
+    int F4State;
+    int F5State;
+    int F6State;
 } Inputs;
 
 typedef struct Game {

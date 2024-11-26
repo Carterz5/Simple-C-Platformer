@@ -40,6 +40,18 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     case GLFW_KEY_F2:
         callback_keys.F2State = action;
         break;
+    case GLFW_KEY_F3:
+        callback_keys.F3State = action;
+        break;
+    case GLFW_KEY_F4:
+        callback_keys.F4State = action;
+        break;
+    case GLFW_KEY_F5:
+        callback_keys.F5State = action;
+        break;
+    case GLFW_KEY_F6:
+        callback_keys.F6State = action;
+        break;
     default:
         break;
     }
@@ -124,7 +136,7 @@ Player* init_player(float acceleration, float maxspeed, float maxfall, float siz
 
 Game* init_game(){
     Game* game = malloc(sizeof(Game));
-    game->scene = MAIN_MENU;
+    game->scene = SCENE_MAIN_MENU;
     game->inputs.DownState = 0;
     game->inputs.UpState = 0;
     game->inputs.RightState = 0;
@@ -315,32 +327,45 @@ bool check_collision(Player* player, Quad* box){
 void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, Renderer* player_renderer, Sound sound_data[10], Quad level_data[4][16][12]){
 
     switch (scene){
-    case LEVEL_TEST:
+    case SCENE_LEVEL_TEST:
         VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[0]), level_data[0]);
         VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
         P1->Xstart = 512.0f;
         P1->Ystart = 468.0f;
+        P1->friction = 0.95f;
         respawn_player(P1);
         play_sound(&sound_data[SOUND_MENU]);    
-        game->scene = LEVEL_TEST;
+        game->scene = SCENE_LEVEL_TEST;
         break;
-    case LEVEL_ONE:
+    case SCENE_LEVEL_ONE:
         VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[1]), level_data[1]);
         VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
         P1->Xstart = 1.0f;
-        P1->Ystart = 65.0f;
+        P1->Ystart = 641.0f;
+        P1->friction = 0.95f;
         respawn_player(P1);
-        game->scene = LEVEL_ONE;
+        game->scene = SCENE_LEVEL_ONE;
         stop_sound(&sound_data[SOUND_MENU]);
         break;
-    case LEVEL_TWO:
+    case SCENE_LEVEL_TWO:
         VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[2]), level_data[2]);
         VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
         P1->Xstart = 1.0f;
         P1->Ystart = 65.0f;
+        P1->friction = 0.1f;
         respawn_player(P1);
-        game->scene = LEVEL_TWO;
+        game->scene = SCENE_LEVEL_TWO;
 
+        break;
+    case SCENE_LEVEL_THREE:
+        VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[3]), level_data[3]);
+        VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &P1->quad);
+        P1->Xstart = 1.0f;
+        P1->Ystart = 65.0f;
+        P1->friction = 0.95f;
+        respawn_player(P1);
+        game->scene = SCENE_LEVEL_THREE;
+        stop_sound(&sound_data[SOUND_MENU]);
         break;
     
     default:
@@ -429,53 +454,70 @@ void load_level_data(Quad level_data[4][16][12]){
     generate_level_data(level_data[0],testlevel_array);
 
 
-    //Level one
+    //------Level one-------
 
     float level1_array[192] = {0.0f};
 
-    for (int i = 0; i < 9; i++){
-        level1_array[i] = (float)TEXTURE_GRASS;
-    }
-    for (int i = 1; i < 11; i++){
-        level1_array[(i*16)+3] = (float)TEXTURE_GRASS;
-    }
-    for (int i = 3; i < 12; i++){
-        level1_array[(i*16)+6] = (float)TEXTURE_GRASS;
-    }
-    for (int i = 3; i < 12; i++){
-        level1_array[(i*16)+10] = (float)TEXTURE_GRASS;
-    }
-    for (int i = 3; i < 12; i++){
-        level1_array[(i*16)+11] = (float)TEXTURE_GRASS;
-    }
-    
-    level1_array[4] = (float)TEXTURE_SPIKEUP;
-    level1_array[5] = (float)TEXTURE_SPIKEUP;
 
-    // right stairs
-    level1_array[18] = (float)TEXTURE_GRASS;
-    level1_array[50] = (float)TEXTURE_GRASS;
-    level1_array[82] = (float)TEXTURE_GRASS;
-    level1_array[114] = (float)TEXTURE_GRASS;
-    level1_array[146] = (float)TEXTURE_GRASS;
-  
-
-
-    //left stairs
-    level1_array[32] = (float)TEXTURE_GRASS;
-    level1_array[64] = (float)TEXTURE_GRASS;
-    level1_array[96] = (float)TEXTURE_GRASS;
+    //top left start
+    for (int i = 0; i < 7; i++) {
+        level1_array[113+i] = (float)TEXTURE_GRASS;
+    }
+    level1_array[112] = (float)TEXTURE_DIRT;
+    level1_array[120] = (float)TEXTURE_DIRT;
+    level1_array[121] = (float)TEXTURE_DIRT;
     level1_array[128] = (float)TEXTURE_GRASS;
-    level1_array[160] = (float)TEXTURE_GRASS;
+    level1_array[146] = (float)TEXTURE_GRASS;
+    level1_array[147] = (float)TEXTURE_DIRT;
+    level1_array[163] = (float)TEXTURE_GRASS;
 
 
-    // deathfall landing
+    level1_array[136] = (float)TEXTURE_DIRT;
+    level1_array[152] = (float)TEXTURE_DIRT;
+    level1_array[168] = (float)TEXTURE_GRASS;
 
+    //top right jump
+    level1_array[153] = (float)TEXTURE_GRASS;
+    level1_array[137] = (float)TEXTURE_DIRT;
+    level1_array[121] = (float)TEXTURE_DIRT;
+
+    level1_array[122] = (float)TEXTURE_SPIKEUP;
+    level1_array[123] = (float)TEXTURE_SPIKEUP;
+    level1_array[124] = (float)TEXTURE_SPIKEUP;
+
+    level1_array[125] = (float)TEXTURE_DIRT;
+    level1_array[141] = (float)TEXTURE_DIRT;
+    level1_array[157] = (float)TEXTURE_GRASS;
+
+    //tunnel
+    for (int i = 0; i < 14; i++) {
+        level1_array[82+i] = (float)TEXTURE_GRASS;
+    }
+
+    //death drop
+
+    level1_array[2] = (float)TEXTURE_DIRT;
+    level1_array[18] = (float)TEXTURE_GRASS;
+    level1_array[19] = (float)TEXTURE_GRASS;
+    level1_array[20] = (float)TEXTURE_GRASS;
+    level1_array[21] = (float)TEXTURE_GRASS;
     level1_array[22] = (float)TEXTURE_GRASS;
     level1_array[23] = (float)TEXTURE_GRASS;
-    level1_array[24] = (float)TEXTURE_GRASS;
+    level1_array[50] = (float)TEXTURE_DIRT;
+    level1_array[66] = (float)TEXTURE_DIRT;
+
+
+
     
-    // final jump landing
+    // final jump
+    level1_array[73] = (float)TEXTURE_DIRT;
+    level1_array[74] = (float)TEXTURE_DIRT;
+
+
+    level1_array[57] = (float)TEXTURE_SPIKEDOWN;
+    level1_array[58] = (float)TEXTURE_SPIKEDOWN;
+
+
     level1_array[28] = (float)TEXTURE_GRASS;
     level1_array[29] = (float)TEXTURE_GRASS;
     level1_array[30] = (float)TEXTURE_GRASS;
@@ -487,14 +529,113 @@ void load_level_data(Quad level_data[4][16][12]){
     generate_level_data(level_data[1],level1_array);
 
 
-    // level two
+    //------level two-----------
 
+
+    //bottom floor
     float level2_array[192] = {0.0f};
 
-        for (int i = 0; i < 16; i++){
-        level2_array[i] = (float)TEXTURE_GRASS;
+        for (int i = 0; i < 3; i++){
+        level2_array[i] = (float)TEXTURE_SNOW;
     }
 
+    level2_array[5] = (float)TEXTURE_SNOW;
+    level2_array[8] = (float)TEXTURE_SNOW;
+    level2_array[11] = (float)TEXTURE_SNOW;
+    level2_array[14] = (float)TEXTURE_SNOW;
+    level2_array[15] = (float)TEXTURE_ICE;
+
+    //right stairs
+    level2_array[31] = (float)TEXTURE_SNOW;
+    level2_array[63] = (float)TEXTURE_SNOW;
+    level2_array[45] = (float)TEXTURE_SNOW;
+    level2_array[77] = (float)TEXTURE_SNOW;
+
+
+    //middle tunnel
+    level2_array[76] = (float)TEXTURE_SNOW;
+    level2_array[75] = (float)TEXTURE_SNOW;
+    level2_array[74] = (float)TEXTURE_SNOW;
+    level2_array[73] = (float)TEXTURE_SNOW;
+    level2_array[72] = (float)TEXTURE_SNOW;
+    level2_array[102] = (float)TEXTURE_SPIKEDOWN;
+    level2_array[103] = (float)TEXTURE_SPIKEDOWN;
+
+    level2_array[119] = (float)TEXTURE_ICE;
+    level2_array[120] = (float)TEXTURE_ICE;
+    level2_array[121] = (float)TEXTURE_ICE;
+    level2_array[122] = (float)TEXTURE_ICE;
+    level2_array[123] = (float)TEXTURE_SNOW;
+    level2_array[124] = (float)TEXTURE_SNOW;
+    level2_array[125] = (float)TEXTURE_SNOW;
+    level2_array[126] = (float)TEXTURE_SNOW;
+
+    level2_array[69] = (float)TEXTURE_SNOW;
+    level2_array[68] = (float)TEXTURE_SNOW;
+    level2_array[67] = (float)TEXTURE_SNOW;
+    level2_array[66] = (float)TEXTURE_SNOW;
+    level2_array[65] = (float)TEXTURE_SNOW;
+    level2_array[64] = (float)TEXTURE_SNOW;
+
+    //left spikewall
+    level2_array[112] = (float)TEXTURE_SPIKERIGHT;
+    level2_array[128] = (float)TEXTURE_ICE;
+    level2_array[144] = (float)TEXTURE_ICE;
+    level2_array[160] = (float)TEXTURE_ICE;
+    level2_array[176] = (float)TEXTURE_ICE;
+
+    level2_array[80] = (float)TEXTURE_ICE;
+    level2_array[81] = (float)TEXTURE_ICE;
+    level2_array[82] = (float)TEXTURE_SNOW;
+    level2_array[96] = (float)TEXTURE_ICE;
+    level2_array[97] = (float)TEXTURE_SNOW;
+
+
+    //top middle
+    level2_array[115] = (float)TEXTURE_SNOW;
+    level2_array[116] = (float)TEXTURE_SNOW;
+    level2_array[117] = (float)TEXTURE_SNOW;
+    level2_array[118] = (float)TEXTURE_SNOW;
+
+    level2_array[135] = (float)TEXTURE_SNOW;
+    level2_array[136] = (float)TEXTURE_SNOW;
+    level2_array[137] = (float)TEXTURE_ICE;
+    level2_array[153] = (float)TEXTURE_SNOW;
+
+
+    //final drop
+    level2_array[191] = (float)TEXTURE_SPIKELEFT;
+    level2_array[175] = (float)TEXTURE_SPIKELEFT;
+
+    level2_array[154] = (float)TEXTURE_SNOW;
+    level2_array[155] = (float)TEXTURE_SNOW;
+    level2_array[156] = (float)TEXTURE_SNOW;
+    level2_array[157] = (float)TEXTURE_SNOW;
+
+    level2_array[159] = (float)TEXTURE_ICE;
+    level2_array[143] = (float)TEXTURE_ICE;
+    level2_array[127] = (float)TEXTURE_ICE;
+
+
+
+
+    level2_array[122] = (float)TEXTURE_SNOW;
+    level2_array[138] = (float)TEXTURE_FLAG;
+
     generate_level_data(level_data[2], level2_array);
+
+
+
+    //------level THREE-----------
+
+    float level3_array[192] = {0.0f};
+
+
+    for (int i = 0; i < 16; i++){
+        level3_array[i] = (float)TEXTURE_GRASS;
+    }
+    
+
+    generate_level_data(level_data[3], level3_array);
 
 }
