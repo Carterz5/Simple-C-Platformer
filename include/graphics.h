@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "renderer.h"
+#include "audio.h"
 
 #include "cglm/cglm.h"
 #include "cglm/mat4.h"
@@ -22,8 +23,9 @@ enum TextureType {
     TEXTURE_DIRT = 11,
     TEXTURE_ICE = 12,
     TEXTURE_SNOW = 13,
-    TEXTURE_SAND = 14,
-    TEXTURE_SANDSTONE = 15,
+    TEXTURE_SPACE = 14,
+    TEXTURE_SPACEHAZARD = 15,
+    TEXTURE_SPACEHAZARDDOWN = 16,
     TEXTURE_FLAG = 19,
     TEXTURE_MAINMENU = 20,
     TEXTURE_LEVELONE = 21,
@@ -49,7 +51,7 @@ typedef struct Renderer{
 GLFWwindow* init_opengl(Game* game);
 Renderer* Create_Batch_Renderer(char* shaderpath, unsigned int max_vertices);
 Renderer* Create_Player_Renderer(char* shaderpath);
-void Draw_Player(Renderer* renderer, Player* player);
+void Draw_Player(Renderer* renderer, Player* player, Sound sound_data[10]);
 void load_textures(Shader* batchshader, Shader* playershader, Shader* backgroundshader);
 void Draw_Background(Renderer* renderer, Game* game, Quad backgrounds[5]);
 void load_backgrounds(Quad backgrounds[5]);

@@ -160,6 +160,11 @@ void NK_Draw_Options(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Sound sou
 
     for (int i = 0; i < 5; i++){
         
+        alSourcef(sound_data[i].source, AL_GAIN, effects_volume);
+
+    }
+    for (int i = 5; i < 10; i++){
+        
         alSourcef(sound_data[i].source, AL_GAIN, music_volume);
 
     }

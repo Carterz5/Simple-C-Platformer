@@ -4,8 +4,11 @@
 
 enum SoundType {
 
-    SOUND_TEST = 0,
-    SOUND_MENU = 1
+    SOUND_JUMP = 0,
+    SOUND_DEATH = 1,
+
+    
+    SOUND_MUSIC = 9
 
 };
 

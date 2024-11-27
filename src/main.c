@@ -128,25 +128,26 @@ int main(void){
             fpsCount = 0;
         }
 
-        if (game->scene != SCENE_MAIN_MENU){
+        if (game->scene != SCENE_MAIN_MENU && game->scene != SCENE_WIN){
 
             while (accumulator >= PHYSICS_TIME_STEP) {
-                process_inputs(P1, &game->inputs, sound_data);
+                process_inputs(P1, &game->inputs, sound_data, game, player_renderer);
                 process_physics(P1);
-                level_flag = process_collisions(P1, level_data[game->scene]);
+                level_flag = process_collisions(P1, level_data[game->scene], sound_data);
                 update_player_coords(P1);
                 accumulator -= PHYSICS_TIME_STEP;
             }
             Draw_Background(background_renderer, game, backgrounds);
             R_Draw(&batch_renderer->va, &batch_renderer->ib, &batch_renderer->shader);
-            Draw_Player(player_renderer, P1);
+            Draw_Player(player_renderer, P1, sound_data);
 
-        } else if (game->scene == SCENE_MAIN_MENU) {
-            process_inputs(P1, &game->inputs,sound_data);
+        } else if (game->scene == SCENE_MAIN_MENU || game->scene == SCENE_WIN) {
+            process_inputs(P1, &game->inputs,sound_data, game, player_renderer);
             Draw_Background(background_renderer, game, backgrounds);           
 
         }
         
+
 
         if(game->inputs.OToggle == true){
             NK_Draw_Options(glfwwindow, nkwindow, sound_data);
@@ -168,7 +169,7 @@ int main(void){
                 switch_scene(SCENE_LEVEL_THREE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
                 break;
             case SCENE_LEVEL_THREE:
-                switch_scene(SCENE_LEVEL_FOUR, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+                game->scene = SCENE_WIN;
                 break;
             
             default:
@@ -181,18 +182,24 @@ int main(void){
         if (game->inputs.F1State > GLFW_RELEASE){
             switch_scene(SCENE_LEVEL_TEST, game, P1, batch_renderer, player_renderer, sound_data, level_data);
             
-        } else if (game->inputs.F2State > GLFW_RELEASE || game->inputs.EnterState > GLFW_RELEASE){
+        } else if (game->inputs.F2State > GLFW_RELEASE){
             switch_scene(SCENE_LEVEL_ONE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
 
-        } else if (game->inputs.F3State > GLFW_RELEASE || game->inputs.EnterState > GLFW_RELEASE){
+        } else if (game->inputs.F3State > GLFW_RELEASE){
             switch_scene(SCENE_LEVEL_TWO, game, P1, batch_renderer, player_renderer, sound_data, level_data);
 
-        } else if (game->inputs.F4State > GLFW_RELEASE || game->inputs.EnterState > GLFW_RELEASE){
+        } else if (game->inputs.F4State > GLFW_RELEASE){
             switch_scene(SCENE_LEVEL_THREE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
+
+        } else if (game->inputs.EnterState > GLFW_RELEASE && game->scene == SCENE_MAIN_MENU){
+            switch_scene(SCENE_LEVEL_ONE, game, P1, batch_renderer, player_renderer, sound_data, level_data);
 
         }
         
-        
+        if(game->inputs.EscapeState > GLFW_RELEASE){
+            break;
+
+        }
 
         /* Swap front and back buffers */
         glfwSwapBuffers(glfwwindow);

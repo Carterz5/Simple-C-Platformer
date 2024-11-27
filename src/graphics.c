@@ -6,6 +6,7 @@
 
 
 
+
 GLFWwindow* init_opengl(Game* game){
 
     GLFWwindow* window;
@@ -131,10 +132,10 @@ void load_backgrounds(Quad backgrounds[5]){
 
     R_CreateQuad(&backgrounds[0], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
     R_CreateQuad(&backgrounds[1], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_LEVELONE);
-    R_CreateQuad(&backgrounds[2], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
-    R_CreateQuad(&backgrounds[3], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
-    R_CreateQuad(&backgrounds[4], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
-    R_CreateQuad(&backgrounds[5], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_MAINMENU);
+    R_CreateQuad(&backgrounds[2], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_LEVELTWO);
+    R_CreateQuad(&backgrounds[3], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_LEVELTHREE);
+    R_CreateQuad(&backgrounds[4], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_WIN);
+    R_CreateQuad(&backgrounds[5], 0.0f, 0.0f, 1024.0f, 768.0f, 0.0f, 1.0f, 0.0f, 1.0f, (float)TEXTURE_LEVELONE);
 
 
 
@@ -159,6 +160,9 @@ void Draw_Background(Renderer* renderer, Game* game, Quad backgrounds[5]){
     case SCENE_WIN:
         VB_AddToDynamic(&renderer->vb, sizeof(Quad), &backgrounds[4]);
         break;
+    case SCENE_LEVEL_TEST:
+        VB_AddToDynamic(&renderer->vb, sizeof(Quad), &backgrounds[5]);
+        break;
     
     default:
         break;
@@ -168,7 +172,7 @@ void Draw_Background(Renderer* renderer, Game* game, Quad backgrounds[5]){
 
 }
 
-void Draw_Player(Renderer* renderer, Player* player){
+void Draw_Player(Renderer* renderer, Player* player, Sound sound_data[10]){
 
     if(player->Xpos > 992.0f){
         player->Xpos = 992.0f;
@@ -182,6 +186,7 @@ void Draw_Player(Renderer* renderer, Player* player){
     }
     if(player->Ypos < -128.0f){
         respawn_player(player);
+        play_sound(&sound_data[SOUND_DEATH]);
     }
 
     vec3 modeltranslation = {player->Xpos, player->Ypos, 0.0f};
@@ -209,21 +214,28 @@ void load_textures(Shader* batchshader, Shader* playershader, Shader* background
     Texture player;
     Texture grassblock, dirtblock;
     Texture iceblock, snowblock;
+    Texture spaceblock, spacehazardblock, spacehazardblockdown;
     Texture spikeup, spikedown, spikeleft, spikeright;
-    Texture MainMenu;
-    Texture tree_background;
+    Texture MainMenu, Winscreen;
+    Texture tree_background, ice_background, space_background;
     Texture Flag;
     TX_Construct("../assets/textures/grass.png", &grassblock);
     TX_Construct("../assets/textures/dirt.png", &dirtblock);
     TX_Construct("../assets/textures/ice_block.png", &iceblock);
     TX_Construct("../assets/textures/snow_block.png", &snowblock);
+    TX_Construct("../assets/textures/spaceblock.png", &spaceblock);
+    TX_Construct("../assets/textures/spaceblockhazard.png", &spacehazardblock);
+    TX_Construct("../assets/textures/spaceblockhazarddown.png", &spacehazardblockdown);
     TX_Construct("../assets/textures/spring boy.png", &player);
     TX_Construct("../assets/textures/Spikes.png", &spikeup);
     TX_Construct("../assets/textures/Spikes_down.png", &spikedown);
     TX_Construct("../assets/textures/Spikes_left.png", &spikeleft);
     TX_Construct("../assets/textures/Spikes_right.png", &spikeright);
     TX_Construct("../assets/textures/StartScreen.png", &MainMenu);
+    TX_Construct("../assets/textures/winscreen.png", &Winscreen);
     TX_Construct("../assets/textures/tree_background.png", &tree_background);
+    TX_Construct("../assets/textures/icebackground.png", &ice_background);
+    TX_Construct("../assets/textures/spacebackground.png", &space_background);
     TX_Construct("../assets/textures/flag.png", &Flag);
     TX_Bind(1, &player);
     TX_Bind(2, &spikeup);
@@ -234,9 +246,15 @@ void load_textures(Shader* batchshader, Shader* playershader, Shader* background
     TX_Bind(11, &dirtblock);
     TX_Bind(12, &iceblock);
     TX_Bind(13, &snowblock);
+    TX_Bind(14, &spaceblock);
+    TX_Bind(15, &spacehazardblock);
+    TX_Bind(16, &spacehazardblockdown);
     TX_Bind(19, &Flag);
     TX_Bind(20, &MainMenu);
     TX_Bind(21, &tree_background);
+    TX_Bind(22, &ice_background);
+    TX_Bind(23, &space_background);
+    TX_Bind(24, &Winscreen);
     int samplers[32] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
     //int samplers[4] = {0, 1, 2, 3};
     SH_SetUniform1iv(batchshader, "u_Textures", 32, samplers);

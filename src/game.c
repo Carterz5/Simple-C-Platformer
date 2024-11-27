@@ -28,8 +28,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     case GLFW_KEY_O:
         callback_keys.OState = action;
         break;
+    case GLFW_KEY_G:
+        callback_keys.GState = action;
+        break;
     case GLFW_KEY_ENTER:
         callback_keys.EnterState = action;
+        break;
+    case GLFW_KEY_ESCAPE:
+        callback_keys.EscapeState = action;
         break;
     case GLFW_KEY_F12:
         callback_keys.F12State = action;
@@ -61,7 +67,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
-void process_inputs(Player* player, Inputs* inputs, Sound sound_data[10]){
+void process_inputs(Player* player, Inputs* inputs, Sound sound_data[10], Game* game, Renderer* player_renderer){
 
 
     static unsigned int jump_cooldown = 0;
@@ -79,6 +85,32 @@ void process_inputs(Player* player, Inputs* inputs, Sound sound_data[10]){
         callback_keys.OToggle = false;
     }
 
+    if(callback_keys.GState == GLFW_RELEASE && callback_keys.LastGState == GLFW_PRESS && callback_keys.GToggle == false && (game->scene == SCENE_LEVEL_THREE || game->scene == SCENE_LEVEL_TEST)){
+        callback_keys.GToggle = true;
+        player->gravity = -0.5f;
+        player->quad.v0.TexCoords[0] = 0.0f;
+        player->quad.v0.TexCoords[1] = 1.0f;
+        player->quad.v1.TexCoords[0] = 1.0f;
+        player->quad.v1.TexCoords[1] = 1.0f;
+        player->quad.v2.TexCoords[0] = 1.0f;
+        player->quad.v2.TexCoords[1] = 0.0f;
+        player->quad.v3.TexCoords[0] = 0.0f;
+        player->quad.v3.TexCoords[1] = 0.0f;
+        VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &player->quad);
+    } else if (callback_keys.GState == GLFW_RELEASE && callback_keys.LastGState == GLFW_PRESS && callback_keys.GToggle == true && (game->scene == SCENE_LEVEL_THREE || game->scene == SCENE_LEVEL_TEST)){
+        callback_keys.GToggle = false;
+        player->gravity = 0.5f;
+        player->quad.v0.TexCoords[0] = 0.0f;
+        player->quad.v0.TexCoords[1] = 0.0f;
+        player->quad.v1.TexCoords[0] = 1.0f;
+        player->quad.v1.TexCoords[1] = 0.0f;
+        player->quad.v2.TexCoords[0] = 1.0f;
+        player->quad.v2.TexCoords[1] = 1.0f;
+        player->quad.v3.TexCoords[0] = 0.0f;
+        player->quad.v3.TexCoords[1] = 1.0f;
+        VB_AddToDynamic(&player_renderer->vb, sizeof(Quad), &player->quad);
+    }
+
 
 
     if (callback_keys.RightState > GLFW_RELEASE){
@@ -88,19 +120,31 @@ void process_inputs(Player* player, Inputs* inputs, Sound sound_data[10]){
        player->Xvelocity -= player->acceleration;
     }
     if ((callback_keys.UpState == GLFW_PRESS || callback_keys.SpaceState == GLFW_PRESS) && jump_cooldown == 0 && player->jumps > 0){
-        player->Yvelocity = player->jump_height;
+        switch (callback_keys.GToggle){
+        case true:
+            player->Yvelocity = -player->jump_height;
+            break;
+        case false:
+            player->Yvelocity = player->jump_height;
+            break;
+        
+        default:
+            break;
+        }
         player->jumps--;
         jump_cooldown = 10;
-        play_sound(&sound_data[SOUND_TEST]);
+        play_sound(&sound_data[SOUND_JUMP]);
     }
     
     if(jump_cooldown > 0){
         jump_cooldown--;
     }
 
+   
 
     callback_keys.LastF12State = callback_keys.F12State;
     callback_keys.LastOState = callback_keys.OState;
+    callback_keys.LastGState = callback_keys.GState;
 
     *inputs = callback_keys;
 }
@@ -161,6 +205,8 @@ void process_physics(Player* player){
 
     if(player->Yvelocity < -player->maxfall){
         player->Yvelocity = -player->maxfall;
+    } else if (player->Yvelocity > player->maxfall){
+        player->Yvelocity = player->maxfall;
     }
 
 
@@ -190,7 +236,7 @@ void update_player_coords(Player* player){
 
 }
 
-int process_collisions(Player* player, Quad tiles[16][12]){
+int process_collisions(Player* player, Quad tiles[16][12], Sound sound_data[10]){
 
     float playerLeft = player->Xpos;
     float playerRight = player->Xpos + player->size;
@@ -253,11 +299,7 @@ int process_collisions(Player* player, Quad tiles[16][12]){
         float quadBottom = current_tile.v0.Position[1];
         float quadTop = current_tile.v2.Position[1];
 
-        // if(check_collision(player, &current_tile) == true && (int)current_tile.v0.TexID >= TEXTURE_SPIKEUP && (int)current_tile.v0.TexID <= TEXTURE_SPIKERIGHT){
 
-        //     respawn_player(player);
-
-        // }
 
         if(check_collision(player, &current_tile) == true){
 
@@ -271,7 +313,11 @@ int process_collisions(Player* player, Quad tiles[16][12]){
             if (overlapTop < overlapBottom && overlapTop < overlapLeft && overlapTop < overlapRight) {
                 // Collision on top side of player
                 player->Ypos = quadBottom - player->size;  
-                player->Yvelocity = 0;                     // Stop vertical movement
+                player->Yvelocity = 0;
+                if (callback_keys.GToggle == true) {
+                    player->jumps = 1;
+                }
+    
             } else if (overlapBottom < overlapTop && overlapBottom < overlapLeft && overlapBottom < overlapRight) {
                 // Collision on bottom side of player
                 player->Ypos = quadTop;                    
@@ -289,6 +335,7 @@ int process_collisions(Player* player, Quad tiles[16][12]){
 
             if((int)current_tile.v0.TexID >= TEXTURE_SPIKEUP && (int)current_tile.v0.TexID <= TEXTURE_SPIKERIGHT){
                 respawn_player(player);
+                play_sound(&sound_data[SOUND_DEATH]);
             } else if ((int)current_tile.v0.TexID == TEXTURE_FLAG) {
                 return 1;
             }
@@ -333,8 +380,10 @@ void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, R
         P1->Xstart = 512.0f;
         P1->Ystart = 468.0f;
         P1->friction = 0.95f;
+        P1->Xvelocity = 0.0f;
+        P1->Yvelocity = 0.0f;
         respawn_player(P1);
-        play_sound(&sound_data[SOUND_MENU]);    
+        play_sound(&sound_data[SOUND_MUSIC]);    
         game->scene = SCENE_LEVEL_TEST;
         break;
     case SCENE_LEVEL_ONE:
@@ -343,9 +392,11 @@ void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, R
         P1->Xstart = 1.0f;
         P1->Ystart = 641.0f;
         P1->friction = 0.95f;
+        P1->Xvelocity = 0.0f;
+        P1->Yvelocity = 0.0f;
         respawn_player(P1);
         game->scene = SCENE_LEVEL_ONE;
-        stop_sound(&sound_data[SOUND_MENU]);
+        stop_sound(&sound_data[SOUND_MUSIC]);
         break;
     case SCENE_LEVEL_TWO:
         VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[2]), level_data[2]);
@@ -353,6 +404,8 @@ void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, R
         P1->Xstart = 1.0f;
         P1->Ystart = 65.0f;
         P1->friction = 0.1f;
+        P1->Xvelocity = 0.0f;
+        P1->Yvelocity = 0.0f;
         respawn_player(P1);
         game->scene = SCENE_LEVEL_TWO;
 
@@ -363,9 +416,11 @@ void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, R
         P1->Xstart = 1.0f;
         P1->Ystart = 65.0f;
         P1->friction = 0.95f;
+        P1->Xvelocity = 0.0f;
+        P1->Yvelocity = 0.0f;
         respawn_player(P1);
         game->scene = SCENE_LEVEL_THREE;
-        stop_sound(&sound_data[SOUND_MENU]);
+        stop_sound(&sound_data[SOUND_MUSIC]);
         break;
     
     default:
@@ -630,11 +685,80 @@ void load_level_data(Quad level_data[4][16][12]){
 
     float level3_array[192] = {0.0f};
 
+    //start
+    level3_array[0] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[1] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[2] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[3] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[4] = (float)TEXTURE_SPACE;
 
-    for (int i = 0; i < 16; i++){
-        level3_array[i] = (float)TEXTURE_GRASS;
+    //spike up tunnel
+    for (size_t i = 3; i < 11; i++) {
+        level3_array[i*16] = (float)TEXTURE_SPIKERIGHT;
+    }
+    for (size_t i = 1; i < 8; i++) {
+        level3_array[i*16+4] = (float)TEXTURE_SPIKELEFT;
+    }
+    level3_array[32] = (float)TEXTURE_SPIKEDOWN;
+    level3_array[33] = (float)TEXTURE_SPIKEDOWN;
+    level3_array[34] = (float)TEXTURE_SPIKEDOWN;
+
+    level3_array[176] = (float)TEXTURE_SPACE;
+    level3_array[177] = (float)TEXTURE_SPACEHAZARDDOWN;
+    level3_array[178] = (float)TEXTURE_SPACEHAZARDDOWN;
+    level3_array[179] = (float)TEXTURE_SPACEHAZARDDOWN;
+    level3_array[180] = (float)TEXTURE_SPACEHAZARDDOWN;
+
+
+    level3_array[132] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[131] = (float)TEXTURE_SPIKEDOWN;
+    level3_array[130] = (float)TEXTURE_SPIKEDOWN;
+
+    //spike right up tunnel
+    for (int i = 181; i < 192; i++){
+        level3_array[i] = (float)TEXTURE_SPIKEDOWN;
+    }
+    for (int i = 117; i < 126; i++){
+        level3_array[i] = (float)TEXTURE_SPIKEUP;
     }
     
+    level3_array[61] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[62] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[63] = (float)TEXTURE_SPACEHAZARD;
+
+    //upsidedown jump
+    for (int i = 101; i < 110; i++){
+        level3_array[i] = (float)TEXTURE_SPACEHAZARDDOWN;
+    }
+
+    level3_array[103] = (float)TEXTURE_SPIKEDOWN;
+    level3_array[106] = (float)TEXTURE_SPIKEDOWN;
+    
+
+    level3_array[60] = (float)TEXTURE_SPIKEUP;
+    level3_array[59] = (float)TEXTURE_SPIKEUP;
+    level3_array[58] = (float)TEXTURE_SPIKEUP;
+    level3_array[57] = (float)TEXTURE_SPIKEUP;
+    level3_array[56] = (float)TEXTURE_SPIKEUP;
+    level3_array[55] = (float)TEXTURE_SPIKEUP;
+
+    //final area
+
+    level3_array[5] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[6] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[7] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[8] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[9] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[10] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[11] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[12] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[13] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[14] = (float)TEXTURE_SPACEHAZARD;
+    level3_array[15] = (float)TEXTURE_SPACEHAZARD;
+
+    level3_array[31] = (float)TEXTURE_FLAG;
+
+
 
     generate_level_data(level_data[3], level3_array);
 
