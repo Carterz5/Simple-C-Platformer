@@ -383,7 +383,7 @@ void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, R
         P1->Xvelocity = 0.0f;
         P1->Yvelocity = 0.0f;
         respawn_player(P1);
-        play_sound(&sound_data[SOUND_MUSIC]);    
+            
         game->scene = SCENE_LEVEL_TEST;
         break;
     case SCENE_LEVEL_ONE:
@@ -395,8 +395,8 @@ void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, R
         P1->Xvelocity = 0.0f;
         P1->Yvelocity = 0.0f;
         respawn_player(P1);
+        play_sound(&sound_data[SOUND_MUSIC]);
         game->scene = SCENE_LEVEL_ONE;
-        stop_sound(&sound_data[SOUND_MUSIC]);
         break;
     case SCENE_LEVEL_TWO:
         VB_AddToDynamic(&batch_renderer->vb, sizeof(level_data[2]), level_data[2]);
@@ -420,7 +420,7 @@ void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, R
         P1->Yvelocity = 0.0f;
         respawn_player(P1);
         game->scene = SCENE_LEVEL_THREE;
-        stop_sound(&sound_data[SOUND_MUSIC]);
+
         break;
     
     default:

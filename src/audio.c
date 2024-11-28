@@ -31,11 +31,11 @@ void load_sounds(Sound sounds[10]){
 
 
 
-    sounds[SOUND_MUSIC].buffer = alutCreateBufferFromFile("../assets/audio/snake_song_2.wav");
+    sounds[SOUND_MUSIC].buffer = alutCreateBufferFromFile("../assets/audio/platformer_song.wav");
     alGenSources(1, &sounds[SOUND_MUSIC].source);
     alSourcei(sounds[SOUND_MUSIC].source, AL_BUFFER, sounds[SOUND_MUSIC].buffer);
     alSourcei(sounds[SOUND_MUSIC].source, AL_LOOPING, 1);
-    alSourcef(sounds[SOUND_MUSIC].source, AL_GAIN, 0.5);
+    alSourcef(sounds[SOUND_MUSIC].source, AL_GAIN, 0.4);
 
 
 

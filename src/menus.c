@@ -125,7 +125,7 @@ void NK_Draw_Debug(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* pla
 
 void NK_Draw_Options(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Sound sound_data[10]){
 
-    static float music_volume = 0.5f;
+    static float music_volume = 0.4f;
     static float effects_volume = 0.5f;
 
     nk_glfw3_new_frame(&nkwindow->glfw);
