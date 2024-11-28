@@ -67,7 +67,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
-void process_inputs(Player* player, Inputs* inputs, Sound sound_data[10], Game* game, Renderer* player_renderer){
+void process_inputs(Player* player, Inputs* inputs, Sound sound_data[3], Game* game, Renderer* player_renderer){
 
 
     static unsigned int jump_cooldown = 0;
@@ -236,7 +236,7 @@ void update_player_coords(Player* player){
 
 }
 
-int process_collisions(Player* player, Quad tiles[16][12], Sound sound_data[10]){
+int process_collisions(Player* player, Quad tiles[16][12], Sound sound_data[3]){
 
     float playerLeft = player->Xpos;
     float playerRight = player->Xpos + player->size;
@@ -371,7 +371,7 @@ bool check_collision(Player* player, Quad* box){
 
 }
 
-void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, Renderer* player_renderer, Sound sound_data[10], Quad level_data[4][16][12]){
+void switch_scene(int scene, Game* game, Player* P1, Renderer* batch_renderer, Renderer* player_renderer, Sound sound_data[3], Quad level_data[4][16][12]){
 
     switch (scene){
     case SCENE_LEVEL_TEST:

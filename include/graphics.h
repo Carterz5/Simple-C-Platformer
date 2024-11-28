@@ -51,7 +51,7 @@ typedef struct Renderer{
 GLFWwindow* init_opengl(Game* game);
 Renderer* Create_Batch_Renderer(char* shaderpath, unsigned int max_vertices);
 Renderer* Create_Player_Renderer(char* shaderpath);
-void Draw_Player(Renderer* renderer, Player* player, Sound sound_data[10]);
+void Draw_Player(Renderer* renderer, Player* player, Sound sound_data[3]);
 void load_textures(Shader* batchshader, Shader* playershader, Shader* backgroundshader);
 void Draw_Background(Renderer* renderer, Game* game, Quad backgrounds[5]);
 void load_backgrounds(Quad backgrounds[5]);

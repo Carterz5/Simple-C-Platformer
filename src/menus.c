@@ -123,10 +123,10 @@ void NK_Draw_Debug(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* pla
 
 }
 
-void NK_Draw_Options(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Sound sound_data[10]){
+void NK_Draw_Options(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Sound sound_data[3]){
 
-    static float music_volume = 0.4f;
-    static float effects_volume = 0.5f;
+    static float music_volume = 0.2f;
+    static float effects_volume = 0.2f;
 
     nk_glfw3_new_frame(&nkwindow->glfw);
 
@@ -158,17 +158,13 @@ void NK_Draw_Options(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Sound sou
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 
-    for (int i = 0; i < 5; i++){
-        
-        alSourcef(sound_data[i].source, AL_GAIN, effects_volume);
 
-    }
-    for (int i = 5; i < 10; i++){
         
-        alSourcef(sound_data[i].source, AL_GAIN, music_volume);
-
-    }
-    
+        alSourcef(sound_data[SOUND_DEATH].source, AL_GAIN, effects_volume);
+        alSourcef(sound_data[SOUND_JUMP].source, AL_GAIN, effects_volume);
+        
+        alSourcef(sound_data[SOUND_MUSIC].source, AL_GAIN, music_volume);
+  
 
 
 

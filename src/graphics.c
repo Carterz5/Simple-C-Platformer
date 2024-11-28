@@ -172,7 +172,7 @@ void Draw_Background(Renderer* renderer, Game* game, Quad backgrounds[5]){
 
 }
 
-void Draw_Player(Renderer* renderer, Player* player, Sound sound_data[10]){
+void Draw_Player(Renderer* renderer, Player* player, Sound sound_data[3]){
 
     if(player->Xpos > 992.0f){
         player->Xpos = 992.0f;

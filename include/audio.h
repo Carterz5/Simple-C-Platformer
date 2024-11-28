@@ -6,9 +6,7 @@ enum SoundType {
 
     SOUND_JUMP = 0,
     SOUND_DEATH = 1,
-
-    
-    SOUND_MUSIC = 9
+    SOUND_MUSIC = 2
 
 };
 
@@ -21,7 +19,7 @@ typedef struct Sound {
 
 
 
-void load_sounds(Sound sounds[10]);
+void load_sounds(Sound sounds[3]);
 void stop_sound(Sound* sound);
 void play_sound (Sound* sound);
 

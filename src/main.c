@@ -66,7 +66,7 @@ int main(void){
 
     
     alutInit(0,0);
-    Sound sound_data[10];
+    Sound sound_data[3];
     load_sounds(sound_data);
 
     Quad level_data[4][16][12];

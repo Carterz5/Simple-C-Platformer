@@ -26,7 +26,7 @@ typedef struct Nuklear_window {
 Nuklear_window* NK_init(GLFWwindow* glfwwindow);
 void NK_Destruct(Nuklear_window* nkwindow);
 void NK_Draw_Debug(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Player* player);
-void NK_Draw_Options(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Sound sound_data[10]);
+void NK_Draw_Options(GLFWwindow* glfwwindow, Nuklear_window* nkwindow, Sound sound_data[3]);
 
 
 #endif
