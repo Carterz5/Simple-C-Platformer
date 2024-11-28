@@ -19,7 +19,7 @@ OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
 # Detect the operating system
 ifeq ($(OS), Windows_NT)
     # Windows-specific settings
-	TARGET = bin/Platformer.exe
+	TARGET = bin/Hazard_Hopper.exe
     INCLUDES = -I$(INC_DIR) -I$(INC_DIR)/vendor -I$(INC_DIR)/opengl -I/ucrt64/include/GL
 
     
@@ -27,15 +27,15 @@ ifeq ($(OS), Windows_NT)
 
     STATIC_LIBS = -lglfw3 -lopengl32 -lgdi32 -lglu32
 
-	RUN_CMD = cd $(BIN_DIR) && ./Platformer.exe
+	RUN_CMD = cd $(BIN_DIR) && ./Hazard_Hopper.exe
     LDFLAGS = -L/ucrt64/lib -Wl,-Bdynamic $(DYN_LIBS) -Wl,-Bstatic $(STATIC_LIBS) -mwindows
 else
     # Linux-specific settings
-	TARGET = bin/Platformer.out
+	TARGET = bin/Hazard_Hopper.out
     INCLUDES = $(shell find $(INC_DIR) -type d | sed 's/^/-I/')
     LIBS = -lGLEW -lglfw -lGL -lGLU -lX11 -lm -lopenal -lalut
     LDFLAGS = $(LIBS)
-	RUN_CMD = cd $(BIN_DIR) && ./Platformer.out
+	RUN_CMD = cd $(BIN_DIR) && ./Hazard_Hopper.out
 endif
 
 # Compiler flags
