@@ -22,25 +22,7 @@
 
 
 
-// ----TODO----
-//win screen
-//add more levels
-//moving blade
-//music
-//sound effects
-// ---ART---
-//add more spike textures.
-//get rid of placeholder art
 
-//---DONE---
-//kill block
-//main menu
-//win block
-//fix bouncy bug
-//sound
-//options
-//switch scene function
-//compile for windows
 
 
 int main(void){
